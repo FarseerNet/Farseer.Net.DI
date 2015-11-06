@@ -1,4 +1,4 @@
-官方地址：http://www.cnblogs.com/steden/
+﻿官方地址：http://www.cnblogs.com/steden/
 官方QQ群：116228666 (Farseer.net开源框架交流) 请注明：博客园
 
 Farseer.Net.DI
@@ -88,7 +88,7 @@ Farseer.Net.DI是一个轻量级、高性能的IoC容器，用于解耦和管理
     }
     
     ///  作为自动注入的属性
-    register.RegisterType<ILogger, Logger>().AsPropertyDependency();
+    register.RegisterType<ILogger, Logger>().AsPropertyInjection();
     
     register.RegisterType<IUserRepository, UserRepository>();
     using (IDependencyResolver resolver = container.CreateResolver())
