@@ -1,4 +1,4 @@
-﻿namespace FS.IoC.Core
+﻿namespace FS.DI.Core
 {
     /// <summary>
     /// 指示依赖注入对象的生命周期

@@ -1,4 +1,5 @@
 ﻿using FS.DI.Core;
+using FS.Extends;
 using System;
 
 namespace FS.DI.Resolver.CallSite
@@ -21,7 +22,7 @@ namespace FS.DI.Resolver.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            context.Complete = DependencyTableHelper.TryGetCompileValue(_dependencyTable, context, resolver);
+            context.CompleteHandled = _dependencyTable.TryGetCompileValue(context, resolver);
         }
     }
 }

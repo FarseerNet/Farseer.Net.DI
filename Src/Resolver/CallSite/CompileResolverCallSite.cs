@@ -1,10 +1,10 @@
 ﻿using FS.DI.Core;
+using FS.Extends;
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace FS.DI.Resolver.CallSite
-{ 
+{
     /// <summary>
     /// 编译解析器
     /// </summary>
@@ -33,7 +33,7 @@ namespace FS.DI.Resolver.CallSite
                 var completeValue = factory.Invoke(resolver, args);
                 context.CompleteValue = completeValue;
                 CacheComplete(context, resolver);
-                context.Complete = !_dependencyTable.HasPropertyEntryTable.ContainsKey(context.DependencyEntry);        
+                context.CompleteHandled = !_dependencyTable.HasPropertyEntryTable.ContainsKey(context.DependencyEntry);        
             }
             catch (Exception ex)
             {
@@ -44,9 +44,10 @@ namespace FS.DI.Resolver.CallSite
         private Object[] GetParameters(IResolverContext context, IDependencyTable dependencyTable, IDependencyResolver resolver)
         {
             return context.HasImplementationDelegate() ?
-                    new Object[0] :
+                    new Object[0] : context.HasPublicConstructor() ? 
                     context.DependencyEntry.GetImplementationType().
-                    GetConstructorParameters(_dependencyTable, resolver);
+                    GetConstructorParameters(dependencyTable, resolver) : 
+                    new Object[0];
         }
         /// <summary>
         /// 编译表达式树生成委托
@@ -54,14 +55,7 @@ namespace FS.DI.Resolver.CallSite
         /// <param name="body"></param>
         /// <returns></returns>
         private Func<IDependencyResolver, Object[], Object> CreateDelegate(Expression body)
-        {
-            //var parameter = body is InvocationExpression
-            //    ? ((InvocationExpression)body).Arguments.Select(e => (ParameterExpression)e).ToArray()
-            //    : new[] { Expression.Parameter(typeof(IDependencyResolver), "resolver") };
-            //var a = body as NewExpression;
-
-            //var lambda = Expression.Lambda<Func<IDependencyResolver, Object>>(body, parameter);
-            //return lambda.Compile();
+        {          
             return (body as Expression<Func<IDependencyResolver, Object[], Object>>).Compile();
         }
 
@@ -69,11 +63,11 @@ namespace FS.DI.Resolver.CallSite
         {
             if (context.IsSingletonLifetime())
             {
-                DependencyTableHelper.AddScoped(_dependencyTable, context, null);
+                _dependencyTable.AddScoped(context, null);
             }
             if (context.IsScopedLifetime())
             {
-                DependencyTableHelper.AddScoped(_dependencyTable, context, resolver);
+                _dependencyTable.AddScoped(context, resolver);
             }
         }
     }

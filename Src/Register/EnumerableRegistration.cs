@@ -20,6 +20,31 @@ namespace FS.DI.Register
             if (configurationCollection == null) throw new ArgumentNullException(nameof(configurationCollection));
             _configurationCollection = new List<IDependencyRegistration>(configurationCollection);
         }
+
+        public IEnumerableRegistration AsDynamicProxy()
+        {
+            foreach (var configuration in _configurationCollection)
+            {
+                if (configuration == null)
+                    throw new NullReferenceException("IDependencyConfiguration不能为null");
+
+                configuration.AsDynamicProxy();
+            }
+            return this;
+        }
+
+        public IEnumerableRegistration AsPropertyInjection()
+        {
+            foreach (var configuration in _configurationCollection)
+            {
+                if (configuration == null)
+                    throw new NullReferenceException("IDependencyConfiguration不能为null");
+
+                configuration.AsPropertyInjection();
+            }
+            return this;
+        }
+
         /// <summary>
         /// 注册为作用域的生命周期
         /// </summary>

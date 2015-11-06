@@ -88,27 +88,13 @@ namespace FS.DI.Resolver
                      Any(genericType => genericType == serviceType)).
                      Select(entry => entry.ServiceType).
                      ToArray();
-                return DistinctBy(BuildUp(serviceTypes), obj => obj.GetType());
+                return BuildUp(serviceTypes).Distinct(obj => obj.GetType());
             }
 
-            return DistinctBy(BuildUp(serviceType), obj => obj.GetType());
+            return BuildUp(serviceType).Distinct(obj => obj.GetType());
         }
 
-        /// <summary>
-        /// 筛选重复的结果
-        /// </summary>
-        public IEnumerable<TSource> DistinctBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-        {
-            HashSet<TKey> seenKeys = new HashSet<TKey>();
-            foreach (TSource element in source)
-            {
-                if (seenKeys.Add(keySelector(element)))
-                {
-                    yield return element;
-                }
-            }
-        }
-
+       
         private Object BuildUp(IResolverContext context)
         {
             for (int i = CallSiteCollection.Count - 1; i >= 0; i--)
@@ -120,7 +106,7 @@ namespace FS.DI.Resolver
 
                 callSite.Resolver(context, this);
 
-                if (!context.Complete)
+                if (!context.CompleteHandled)
                     continue;
 
                 return context.CompleteValue;

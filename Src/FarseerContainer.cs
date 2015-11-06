@@ -115,35 +115,23 @@ namespace FS.DI.Core
         /// 创建服务注册器
         /// </summary>
         /// <returns></returns>
-        public IDependencyRegister CreateRegister()
-        {
-            return this._dependencyRegisterProvider.CreateRegister();
-        }
+        public IDependencyRegister CreateRegister() => _dependencyRegisterProvider.CreateRegister();
         /// <summary>
         /// 创建服务注册器
         /// </summary>
         /// <returns></returns>
-        IDependencyRegister IDependencyRegisterProvider.CreateRegister()
-        {
-            return new Register.DependencyRegister(this);
-        }
+        IDependencyRegister IDependencyRegisterProvider.CreateRegister() => new Register.DependencyRegister(this);
         /// <summary>
         /// 创建服务解析器
         /// </summary>
         /// <returns></returns>
-        public IDependencyResolver CreateResolver()
-        {
-            return this._dependencyResolverProvider.CreateResolver();
-        }
+        public IDependencyResolver CreateResolver() => _dependencyResolverProvider.CreateResolver();
 
         /// <summary>
         /// 创建服务解析器
         /// </summary>
         /// <returns></returns>
-        IDependencyResolver IDependencyResolverProvider.CreateResolver()
-        {
-            return new Resolver.DependencyResolver(this);
-        }
+        IDependencyResolver IDependencyResolverProvider.CreateResolver() => new Resolver.DependencyResolver(this);
         /// <summary>
         /// 设置服务注册器提供者
         /// </summary>

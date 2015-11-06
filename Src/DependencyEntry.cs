@@ -9,7 +9,7 @@ namespace FS.DI.Core
     {
         private readonly Object _sync = new Object();
 
-        public DependencyStyle Style { get; internal set; } = DependencyStyle.ClassDependency;
+        public DependencyStyle Style { get; internal set; }
         /// <summary>
         /// 依赖注入的实现类型
         /// </summary>
@@ -39,7 +39,7 @@ namespace FS.DI.Core
         /// </summary>
         public DependencyEntry Last { get; private set; }
 
-        private DependencyEntry(Type serviceType,DependencyLifetime lifetime)
+        private DependencyEntry(Type serviceType, DependencyLifetime lifetime)
         {
             if (serviceType == null)
             {
@@ -57,9 +57,9 @@ namespace FS.DI.Core
         }
 
         private DependencyEntry(Type serviceType, DependencyLifetime lifetime, Type implementationType)
-            :this(serviceType,lifetime)
+            : this(serviceType, lifetime)
         {
-          
+
             if (implementationType == null)
             {
                 throw new ArgumentNullException(nameof(implementationType));
@@ -78,8 +78,8 @@ namespace FS.DI.Core
             ImplementationType = implementationType;
         }
 
-        private DependencyEntry(Type serviceType, DependencyLifetime lifetime, Object implementationInstance)
-            :this(serviceType,lifetime)
+        private DependencyEntry(Type serviceType, Object implementationInstance)
+            : this(serviceType, DependencyLifetime.Singleton)
         {
             var implType = implementationInstance.GetType();
 
@@ -87,7 +87,7 @@ namespace FS.DI.Core
             {
                 throw new InvalidOperationException(String.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName, implType.FullName));
             }
-                
+
             ImplementationInstance = implementationInstance;
         }
 
@@ -128,7 +128,7 @@ namespace FS.DI.Core
             var typeArguments = ImplementationDelegate.GetType().GetGenericArguments();
 
             if (typeArguments.Length == 2)
-            {              
+            {
                 return typeArguments[1];
             }
 
@@ -143,8 +143,8 @@ namespace FS.DI.Core
             if (dependencyEntry == null)
             {
                 throw new ArgumentNullException(nameof(dependencyEntry));
-            }             
-              
+            }
+
             if (ServiceType != dependencyEntry.ServiceType)
             {
                 throw new ArgumentOutOfRangeException(nameof(dependencyEntry), "当前注册的服务类型需于目标服务类型一致。");
@@ -189,9 +189,9 @@ namespace FS.DI.Core
         /// <param name="lifetime"></param>
         /// <param name="implementationInstance"></param>
         /// <returns></returns>
-        public static DependencyEntry ForInstance(Type serviceType, DependencyLifetime lifetime, Object implementationInstance)
+        public static DependencyEntry ForInstance(Type serviceType, Object implementationInstance)
         {
-            return new DependencyEntry(serviceType, lifetime, implementationInstance);
+            return new DependencyEntry(serviceType, implementationInstance);
         }
 
         /// <summary>
@@ -207,6 +207,5 @@ namespace FS.DI.Core
         {
             return new DependencyEntry(serviceType, lifetime, implementationDelegate);
         }
-
     }
 }

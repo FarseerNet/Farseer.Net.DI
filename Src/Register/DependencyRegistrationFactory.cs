@@ -9,7 +9,7 @@ using System.Reflection;
 namespace FS.DI.Register
 {
     /// <summary>
-    /// 依赖注入配置工厂类
+    /// DependencyRegistrationFactory
     /// </summary>
     internal static class DependencyRegistrationFactory
     {
@@ -22,7 +22,7 @@ namespace FS.DI.Register
         internal static IDependencyRegistration ForInstance(Type serviceType, Object implementationInstance)
         {
             return new DependencyRegistration(
-               DependencyEntry.ForInstance(serviceType, DependencyLifetime.Transient, implementationInstance));
+               DependencyEntry.ForInstance(serviceType, implementationInstance));
         }
 
         internal static IDependencyRegistration ForDelegate<TService>(Type serviceType, Func<IDependencyResolver, TService> implementationDelegate)

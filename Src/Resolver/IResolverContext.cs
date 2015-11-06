@@ -11,7 +11,7 @@ namespace FS.DI.Resolver
         /// <summary>
         /// 是否完成
         /// </summary>
-        Boolean Complete { get; set; }
+        Boolean CompleteHandled { get; set; }
 
         /// <summary>
         /// 上下文对象

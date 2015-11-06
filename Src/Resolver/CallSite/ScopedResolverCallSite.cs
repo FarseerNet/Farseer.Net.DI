@@ -1,4 +1,5 @@
 ﻿using FS.DI.Core;
+using FS.Extends;
 using System;
 
 namespace FS.DI.Resolver.CallSite
@@ -25,15 +26,8 @@ namespace FS.DI.Resolver.CallSite
             if (_dependencyTable.TryGetScoped(context, resolver, out completeValue))
             {
                 context.CompleteValue = completeValue;
-                context.Complete = true;
-                return;
+                context.CompleteHandled = true;
             }
-            //if (_dependencyTable.TryGetCompileValue(context, resolver, out completeValue))
-            //{
-            //    context.CompleteValue = completeValue;
-            //    context.Complete = true;
-            //    DependencyTableHelper.AddScoped(_dependencyTable, context, resolver);
-            //}
         }
     }
 }

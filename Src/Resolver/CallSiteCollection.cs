@@ -34,27 +34,13 @@ namespace FS.DI.Resolver
         /// 添加新的解析器
         /// </summary>
         /// <param name="callSite"></param>
-        public void Add(IResolverCallSite callSite)
-        {
-            _callSiteCollection.Add(callSite);
-        }
+        public void Add(IResolverCallSite callSite) => _callSiteCollection.Add(callSite);
 
-        public IEnumerator<IResolverCallSite> GetEnumerator()
-        {
-            return _callSiteCollection.GetEnumerator();
-        }
-
+        public IEnumerator<IResolverCallSite> GetEnumerator() => _callSiteCollection.GetEnumerator();
         /// <summary>
         /// 移除所有解析器
         /// </summary>
-        public void RemoveAll()
-        {
-            _callSiteCollection.Clear();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public void RemoveAll() => _callSiteCollection.Clear();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

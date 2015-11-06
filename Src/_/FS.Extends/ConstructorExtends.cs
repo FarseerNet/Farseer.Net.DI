@@ -1,80 +1,13 @@
 ﻿using FS.DI.Core;
-using FS.Extends;
+using FS.DI.Resolver;
 using System;
 using System.Linq;
 using System.Reflection;
- 
-namespace FS.DI.Resolver.CallSite
+
+namespace FS.Extends
 {
-    /// <summary>
-    /// CallSite帮助类
-    /// </summary>
-    internal static class CallSiteHelper
+    public static class ReflectionExtends
     {
-        /// <summary>
-        /// 是否执行完成
-        /// </summary>
-        internal static bool NotComplete(this IResolverContext context)
-        {
-            return !context.Complete;
-        }
-
-        /// <summary>
-        /// 是否Transient生命周期
-        /// </summary>
-        internal static bool IsTransientLifetime(this IResolverContext context)
-        {
-            return context.DependencyEntry.Lifetime == DependencyLifetime.Transient;
-        }
-
-        /// <summary>
-        /// 是否Singleton生命周期
-        /// </summary>
-        internal static bool IsSingletonLifetime(this IResolverContext context)
-        {
-            return context.DependencyEntry.Lifetime == DependencyLifetime.Singleton;
-        }
-
-        /// <summary>
-        /// 是否Scoped生命周期
-        /// </summary>
-        internal static bool IsScopedLifetime(this IResolverContext context)
-        {
-            return context.DependencyEntry.Lifetime == DependencyLifetime.Scoped;
-        }
-
-        /// <summary>
-        /// ImplementationType是否有值
-        /// </summary>
-        internal static bool HasImplementationType(this IResolverContext context)
-        {
-            return context.DependencyEntry.ImplementationType != null;
-        }
-
-        /// <summary>
-        /// ImplementationInstance是否有值
-        /// </summary>
-        internal static bool HasImplementationInstance(this IResolverContext context)
-        {
-            return context.DependencyEntry.ImplementationInstance != null;
-        }
-
-        /// <summary>
-        /// ImplementationDelegate是否有值
-        /// </summary>
-        internal static bool HasImplementationDelegate(this IResolverContext context)
-        {
-            return context.DependencyEntry.ImplementationDelegate != null;
-        }
-
-        /// <summary>
-        /// 是否含有公共的构造方法
-        /// </summary>
-        internal static bool HasPublicConstructor(this IResolverContext context)
-        {
-            return context.DependencyEntry.GetImplementationType().GetConstructors().Any(ctor => ctor.GetParameters().Length > 0);
-        }
-
         /// <summary>
         /// 返回最佳构造方法
         /// </summary>
@@ -125,6 +58,6 @@ namespace FS.DI.Resolver.CallSite
                     GetParameters().
                     Select(p => resolver.Resolve(p.ParameterType)).
                     ToArray();
-        }
+        }    
     }
 }

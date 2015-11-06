@@ -1,11 +1,12 @@
-﻿using FS.DI.Core;
+﻿using FS.Cache;
+using FS.DI.Core;
 
 namespace FS.DI.Register
 {
     /// <summary>
     /// 依赖服务注册实现类
     /// </summary>
-    internal sealed class DependencyRegistration : IDependencyRegistration
+    internal sealed class DependencyRegistration : IDependencyRegistration, ILifetimeRegistration, ISingletonRegistration
     {
         internal DependencyEntry Entry { get; set; }
 
@@ -13,6 +14,8 @@ namespace FS.DI.Register
         {
             Entry = entry;
         }
+
+        #region IDependencyRegistration
 
         /// <summary>
         /// 注册为瞬态实例的生命周期
@@ -44,10 +47,72 @@ namespace FS.DI.Register
             return this;
         }
 
-        public IDependencyRegistration AsPropertyDependency()
+        /// <summary>
+        /// 注册为属性依赖
+        /// </summary>
+        public IDependencyRegistration AsPropertyInjection()
         {
-            Entry.Style = DependencyStyle.PropertyDependency;
+            if (!Entry.Style.HasFlag(DependencyStyle.PropertyInjection))
+            {
+                Entry.Style = Entry.Style | DependencyStyle.PropertyInjection;
+            }
             return this;
         }
+
+        public IDependencyRegistration AsDynamicProxy()
+        {
+            if (!Entry.Style.HasFlag(DependencyStyle.DynamicProxy))
+            {
+                Entry.Style = Entry.Style | DependencyStyle.DynamicProxy;   
+            }
+            return this;
+        }
+
+        #endregion       
+
+        #region ILifetimeRegistration
+
+        ILifetimeRegistration ITransientRegistration<ILifetimeRegistration>.AsTransientLifetime()
+        {
+            return (DependencyRegistration)AsTransientLifetime();
+        }
+
+        ILifetimeRegistration IScopedRegistration<ILifetimeRegistration>.AsScopedLifetime()
+        {
+            return (DependencyRegistration)AsScopedLifetime();
+        }
+
+        ILifetimeRegistration ISingletonRegistration<ILifetimeRegistration>.AsSingletonLifetime()
+        {
+            return (DependencyRegistration)AsSingletonLifetime();
+        }
+
+        ILifetimeRegistration IPropertyRegistration<ILifetimeRegistration>.AsPropertyInjection()
+        {
+            return (DependencyRegistration)AsPropertyInjection();
+        }
+
+        #endregion
+
+        #region ISingletonRegistration
+
+        /// <summary>
+        /// 注册为单例的生命周期
+        /// </summary>
+        /// <returns></returns>
+        ISingletonRegistration ISingletonRegistration<ISingletonRegistration>.AsSingletonLifetime()
+        {
+            return (DependencyRegistration)AsSingletonLifetime();
+        }
+
+        /// <summary>
+        /// 注册为属性依赖
+        /// </summary>
+        ISingletonRegistration IPropertyRegistration<ISingletonRegistration>.AsPropertyInjection()
+        {
+            return (DependencyRegistration)AsPropertyInjection();
+        }
+
+        #endregion
     }
 }

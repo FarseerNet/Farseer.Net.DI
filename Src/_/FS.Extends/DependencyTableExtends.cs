@@ -1,13 +1,11 @@
 ﻿using FS.DI.Core;
+using FS.DI.Resolver;
+using FS.DI.Resolver.CallSite;
 using System;
-using System.Linq;
- 
-namespace FS.DI.Resolver.CallSite
+
+namespace FS.Extends
 {
-    /// <summary>
-    /// DependencyTable帮助类
-    /// </summary>
-    internal static class DependencyTableHelper
+    static class DependencyTableExtends
     {
         /// <summary>
         /// 获取作用域缓存的key
@@ -38,18 +36,18 @@ namespace FS.DI.Resolver.CallSite
         /// </summary>
         internal static bool TryGetCompileValue(this IDependencyTable dependencyTable, IResolverContext context, IDependencyResolver resolver)
         {
-            Func<IDependencyResolver,Object[], Object> resultingValueFactory;
+            Func<IDependencyResolver, Object[], Object> resultingValueFactory;
             if (dependencyTable.CompileTable.TryGetValue(context.DependencyEntry, out resultingValueFactory))
             {
-                var args = context.DependencyEntry.GetImplementationType().
-                    GetConstructorParameters(dependencyTable, resolver);              
+                var args = context.HasPublicConstructor() ? context.DependencyEntry.GetImplementationType().
+                    GetConstructorParameters(dependencyTable, resolver) : new Object[0];
                 context.CompleteValue = resultingValueFactory(resolver, args);
                 if (dependencyTable.HasPropertyEntryTable.ContainsKey(context.DependencyEntry))
                 {
                     new PropertyResolverCallSite(dependencyTable).Resolver(context, resolver);
-                }        
+                }
             }
-            return context.Complete;
+            return context.CompleteHandled;
         }
 
         /// <summary>
@@ -57,12 +55,12 @@ namespace FS.DI.Resolver.CallSite
         /// </summary>
         internal static bool TryGetScoped(this IDependencyTable dependencyTable, IResolverContext context, IDependencyResolver resolver, out Object value)
         {
-            return dependencyTable.ScopedTable.TryGetValue(DependencyTableHelper.GetScopedKey(context, resolver), out value);
+            return dependencyTable.ScopedTable.TryGetValue(DependencyTableExtends.GetScopedKey(context, resolver), out value);
         }
 
-        internal static void AddScoped(this IDependencyTable dependencyTable,IResolverContext context, IDependencyResolver resolver)
+        internal static void AddScoped(this IDependencyTable dependencyTable, IResolverContext context, IDependencyResolver resolver)
         {
-            dependencyTable.ScopedTable.Add(DependencyTableHelper.GetScopedKey(context, resolver), context.CompleteValue);
+            dependencyTable.ScopedTable.Add(DependencyTableExtends.GetScopedKey(context, resolver), context.CompleteValue);
         }
     }
 }

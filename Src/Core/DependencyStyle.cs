@@ -1,15 +1,23 @@
-﻿namespace FS.IoC.Core
+﻿using System;
+
+namespace FS.DI.Core
 {
+    [Flags]
     public enum DependencyStyle
     {
         /// <summary>
-        /// 类型
+        /// 默认类型
         /// </summary>
-        ClassDependency = 0,
+        Default = 1,
 
         /// <summary>
-        /// 属性
+        /// 属性注入
         /// </summary>
-        PropertyDependency = 1,
+        PropertyInjection = 2,
+
+        /// <summary>
+        /// 动态代理
+        /// </summary>
+        DynamicProxy = 4,
     }
 }

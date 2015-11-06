@@ -8,7 +8,7 @@ namespace FS.DI.Resolver
     /// </summary>
     internal class ResolverContext : IResolverContext
     {
-        public bool Complete { get; set; } = false;
+        public bool CompleteHandled { get; set; } = false;
 
         public object CompleteValue { get; set; }
         public DependencyEntry DependencyEntry { get; private set; }

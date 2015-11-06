@@ -1,5 +1,6 @@
 ﻿using FS.Cache;
 using FS.DI.Core;
+using FS.Extends;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace FS.DI.Resolver.CallSite
                         context.DependencyEntry.GetImplementationType(), property.PropertyType), ex);
                 }
             }
-            context.Complete = true;
+            context.CompleteHandled = true;
         }
     }
 }

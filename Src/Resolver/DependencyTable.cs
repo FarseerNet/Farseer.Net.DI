@@ -35,7 +35,7 @@ namespace FS.DI.Resolver
 
             PropertyEntryTable = new ConcurrentDictionary<Type, DependencyEntry>(
                 dependencyEntrys.
-                Where(entry => entry.Last.Style == DependencyStyle.PropertyDependency).
+                Where(entry => entry.Last.Style.HasFlag(DependencyStyle.PropertyInjection)).
                 ToDictionary(entry => entry.ServiceType)
                 );
 

@@ -34,8 +34,7 @@ namespace FS.DI.Core
         /// 注册 Type
         /// </summary>
         public static IDependencyRegistration RegisterType<TService, TImplementation>(this IDependencyRegister dependencyRegister)
-            where TService : class
-            where TImplementation : class, TService
+            where TImplementation : TService
         {
             return dependencyRegister.RegisterType(typeof(TService), typeof(TImplementation));
         }
@@ -44,7 +43,6 @@ namespace FS.DI.Core
         /// 注册 Type
         /// </summary>
         public static IDependencyRegistration RegisterType<TService>(this IDependencyRegister dependencyRegister)
-            where TService : class
         {
             return dependencyRegister.RegisterType(typeof(TService));
         }
@@ -52,7 +50,7 @@ namespace FS.DI.Core
         /// <summary>
         /// 注册 实例
         /// </summary>
-        public static IDependencyRegistration RegisterInstance(this IDependencyRegister dependencyRegister, Object instance)
+        public static ISingletonRegistration<ISingletonRegistration> RegisterInstance(this IDependencyRegister dependencyRegister, Object instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
 
@@ -62,20 +60,19 @@ namespace FS.DI.Core
         /// <summary>
         /// 注册 实例
         /// </summary>
-        public static IDependencyRegistration RegisterInstance(this IDependencyRegister dependencyRegister, Type serviceType, Object implementationInstance)
+        public static ISingletonRegistration<ISingletonRegistration> RegisterInstance(this IDependencyRegister dependencyRegister, Type serviceType, Object implementationInstance)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             if (implementationInstance == null) throw new ArgumentNullException(nameof(implementationInstance));
 
             var registerConfiguration = DependencyRegistrationFactory.ForInstance(serviceType, implementationInstance);
-            return RegisterRegistration(dependencyRegister, registerConfiguration);
+            return (DependencyRegistration)RegisterRegistration(dependencyRegister, registerConfiguration);
         }
 
         /// <summary>
         /// 注册 实例
         /// </summary>
-        public static IDependencyRegistration RegisterInstance<TService>(this IDependencyRegister dependencyRegister, Object instance)
-            where TService : class
+        public static ISingletonRegistration<ISingletonRegistration> RegisterInstance<TService>(this IDependencyRegister dependencyRegister, Object instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
 
@@ -85,27 +82,26 @@ namespace FS.DI.Core
         /// <summary>
         /// 注册 委托
         /// </summary>
-        public static IDependencyRegistration RegisterDelegate<TImplementation>(this IDependencyRegister dependencyRegister, Type serviceType, Func<IDependencyResolver, TImplementation> implementationDelegate)
+        public static ILifetimeRegistration<ILifetimeRegistration> RegisterDelegate<TImplementation>(this IDependencyRegister dependencyRegister, Type serviceType, Func<IDependencyResolver, TImplementation> implementationDelegate)
             where TImplementation : class
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             if (implementationDelegate == null) throw new ArgumentNullException(nameof(implementationDelegate));
 
             var registerConfiguration = DependencyRegistrationFactory.ForDelegate(serviceType, implementationDelegate);
-            return RegisterRegistration(dependencyRegister, registerConfiguration);
+            return (DependencyRegistration)RegisterRegistration(dependencyRegister, registerConfiguration);
         }
 
         /// <summary>
         /// 注册 委托
         /// </summary>
-        public static IDependencyRegistration RegisterDelegate<TService, TImplementation>(this IDependencyRegister dependencyRegister, Func<IDependencyResolver, TImplementation> implementationDelegate)
-            where TService : class
+        public static ILifetimeRegistration<ILifetimeRegistration> RegisterDelegate<TService, TImplementation>(this IDependencyRegister dependencyRegister, Func<IDependencyResolver, TImplementation> implementationDelegate)
             where TImplementation : class, TService
         {
             if (implementationDelegate == null) throw new ArgumentNullException(nameof(implementationDelegate));
 
             var registerConfiguration = DependencyRegistrationFactory.ForDelegate(typeof(TService), implementationDelegate);
-            return RegisterRegistration(dependencyRegister, registerConfiguration);
+            return (DependencyRegistration)RegisterRegistration(dependencyRegister, registerConfiguration);
         }
 
         /// <summary>
