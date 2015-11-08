@@ -10,6 +10,6 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     创建动态类型
         /// </summary>
-        Type CreateDynamicType(Type parentType);
+        Type CreateType(Type parentType);
     }
 }

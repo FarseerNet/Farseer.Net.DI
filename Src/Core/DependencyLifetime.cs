@@ -1,20 +1,20 @@
 ﻿namespace FS.DI.Core
 {
     /// <summary>
-    /// 指示依赖注入对象的生命周期
+    ///     依赖服务生命周期
     /// </summary>
     public enum DependencyLifetime
     {
         /// <summary>
-        /// 表示为单例的生命周期
+        ///     单例
         /// </summary>
         Singleton,
         /// <summary>
-        /// 表示为作用域的生命周期
+        ///     作用域
         /// </summary>
         Scoped,
         /// <summary>
-        /// 表示为瞬态实例的生命周期
+        ///     瞬态实例
         /// </summary>
         Transient
     }

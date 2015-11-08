@@ -3,39 +3,52 @@
 namespace FS.DI.Core
 {
     /// <summary>
-    /// 依赖入口
+    ///     依赖服务对象
     /// </summary>
     public sealed class DependencyEntry
     {
+        /// <summary>
+        ///     线程锁
+        /// </summary>
         private readonly Object _sync = new Object();
 
-        public DependencyStyle Style { get; internal set; }
         /// <summary>
-        /// 依赖注入的实现类型
+        ///     依赖服务风格
+        /// </summary>
+        public DependencyStyle Style { get; internal set; }
+
+        /// <summary>
+        ///     依赖服务实现类型
         /// </summary>
         internal Type ImplementationType { get; private set; }
+
         /// <summary>
-        /// 依赖注入的实现类实例
+        ///     依赖服务实例
         /// </summary>
         internal Object ImplementationInstance { get; private set; }
+
         /// <summary>
-        /// 返回依赖注入实现类的委托
+        ///     返回依赖服务实现类委托
         /// </summary>
         internal Func<IDependencyResolver, object> ImplementationDelegate { get; private set; }
+
         /// <summary>
-        /// 依赖注入的服务类型
+        ///     依赖服务类型
         /// </summary>
         public Type ServiceType { get; private set; }
+
         /// <summary>
-        /// 依赖注入类型的生命周期
+        ///     依赖服务生命周期
         /// </summary>
         public DependencyLifetime Lifetime { get; internal set; }
+
         /// <summary>
-        /// 依赖注入的下一个实现
+        ///     依赖服务下一个实现
         /// </summary>
         public DependencyEntry Next { get; private set; }
+
         /// <summary>
-        /// 依赖注入的实现
+        ///     依赖服务实现
         /// </summary>
         public DependencyEntry Last { get; private set; }
 
@@ -101,8 +114,9 @@ namespace FS.DI.Core
             if (!serviceType.IsAssignableFrom(implType))
                 throw new InvalidOperationException(String.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName, implType.FullName));
         }
+
         /// <summary>
-        /// 返回依赖注入服务的实现类型
+        ///     返回依赖服务的实现类型
         /// </summary>
         /// <returns></returns>
         public Type GetImplementationType()
@@ -134,10 +148,11 @@ namespace FS.DI.Core
 
             throw new ArgumentException(nameof(ServiceType));
         }
+
         /// <summary>
-        /// 添加依赖注入的实现
+        ///     添加依赖服务
         /// </summary>
-        /// <param name="dependencyEntry"></param>
+        /// <param name="dependencyEntry">相同类型的依赖服务</param>
         public void Add(DependencyEntry dependencyEntry)
         {
             if (dependencyEntry == null)
@@ -158,6 +173,9 @@ namespace FS.DI.Core
             AddEntry(dependencyEntry);
         }
 
+        /// <summary>
+        ///     添加依赖服务
+        /// </summary>
         private void AddEntry(DependencyEntry entry)
         {
             lock (_sync)
@@ -168,6 +186,10 @@ namespace FS.DI.Core
             }
         }
 
+        /// <summary>
+        ///     重写ToString
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return String.Format("ServiceType:\"{0}\"  \nImplementationType:\"{1}\"  \nLifetime:\"{2}\"\n",
@@ -175,33 +197,36 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 使用Type作为依赖注入的实现入口
+        ///     创建实现类型的依赖服务
         /// </summary>
+        /// <param name="serviceType">依赖服务类型</param>
+        /// <param name="lifetime">依赖服务生命周期</param>
+        /// <param name="implementationType">依赖服务实现类型</param>
+        /// <returns>依赖服务对象</returns>
         public static DependencyEntry ForType(Type serviceType, DependencyLifetime lifetime, Type implementationType)
         {
             return new DependencyEntry(serviceType, lifetime, implementationType);
         }
 
         /// <summary>
-        /// 使用实例作为依赖注入的实现入口
+        ///     创建实例的依赖服务
         /// </summary>
-        /// <param name="serviceType"></param>
-        /// <param name="lifetime"></param>
-        /// <param name="implementationInstance"></param>
-        /// <returns></returns>
+        /// <param name="serviceType">依赖服务类型</param>
+        /// <param name="implementationInstance">依赖服务实例</param>
+        /// <returns>依赖服务对象</returns>
         public static DependencyEntry ForInstance(Type serviceType, Object implementationInstance)
         {
             return new DependencyEntry(serviceType, implementationInstance);
         }
 
         /// <summary>
-        /// 使用委托作为依赖注入的实现入口
+        ///      创建委托的依赖服务
         /// </summary>
-        /// <typeparam name="TService"></typeparam>
-        /// <param name="serviceType"></param>
-        /// <param name="lifetime"></param>
-        /// <param name="implementationDelegate"></param>
-        /// <returns></returns>
+        /// <typeparam name="TService">依赖服务实现类型</typeparam>
+        /// <param name="serviceType">依赖服务类型</param>
+        /// <param name="lifetime">依赖服务生命周期</param>
+        /// <param name="implementationDelegate">返回依赖服务实现的委托</param>
+        /// <returns>依赖服务对象</returns>
         public static DependencyEntry ForDelegate<TService>(Type serviceType, DependencyLifetime lifetime, Func<IDependencyResolver, TService> implementationDelegate)
             where TService : class
         {

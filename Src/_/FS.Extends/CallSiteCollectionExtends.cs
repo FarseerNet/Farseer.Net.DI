@@ -1,5 +1,5 @@
-﻿using FS.DI.Resolver;
-using FS.DI.Resolver.CallSite;
+﻿using FS.DI.Resolve;
+using FS.DI.Resolve.CallSite;
 
 namespace FS.Extends
 {

@@ -1,5 +1,5 @@
 ﻿using FS.DI.Core;
-using FS.DI.Resolver;
+using FS.DI.Resolve;
 using System;
 using System.Linq;
 using System.Reflection;

@@ -1,4 +1,4 @@
-﻿using FS.DI.Register;
+﻿using FS.DI.Registration;
 using System;
 using System.Reflection;
 

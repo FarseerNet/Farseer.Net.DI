@@ -1,6 +1,6 @@
 ﻿using FS.Cache;
 using FS.DI.DynamicProxy;
-using FS.DI.Register;
+using FS.DI.Registration;
 using System;
 using System.Linq;
 
@@ -9,8 +9,10 @@ namespace FS.DI.Core
     public static class DynamicProxyRegistrationExtensions
     {
         /// <summary>
-        ///      注册为可被动态代理的类型
+        ///     作为动态代理实现的依赖服务
         /// </summary>
+        /// <typeparam name="TInterceptor">自定义拦截器</typeparam>
+        /// <param name="interceptors">自定义拦截器</param>
         public static IDependencyRegistration AsDynamicProxy<TInterceptor>(this IDependencyRegistration registration, TInterceptor[] interceptors)
             where TInterceptor : ICustomInterceptor
         {
@@ -24,8 +26,10 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        ///      注册为可被动态代理的类型
+        ///     作为动态代理实现的依赖服务
         /// </summary>
+        /// <typeparam name="TInterceptor">自定义拦截器</typeparam>
+        /// <param name="interceptors">自定义拦截器</param>
         public static IEnumerableRegistration AsDynamicProxy<TInterceptor>(this IEnumerableRegistration registration, TInterceptor[] interceptors)
              where TInterceptor : ICustomInterceptor
         {

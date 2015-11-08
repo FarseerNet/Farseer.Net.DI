@@ -1,6 +1,6 @@
 ﻿using FS.DI.Core;
-using FS.DI.Resolver;
-using FS.DI.Resolver.CallSite;
+using FS.DI.Resolve;
+using FS.DI.Resolve.CallSite;
 using System;
 
 namespace FS.Extends
@@ -41,13 +41,13 @@ namespace FS.Extends
             {
                 var args = context.HasPublicConstructor() ? context.DependencyEntry.GetImplementationType().
                     GetConstructorParameters(dependencyTable, resolver) : new Object[0];
-                context.CompleteValue = resultingValueFactory(resolver, args);
+                context.Value = resultingValueFactory(resolver, args);
                 if (dependencyTable.HasPropertyEntryTable.ContainsKey(context.DependencyEntry))
                 {
                     new PropertyResolverCallSite(dependencyTable).Resolver(context, resolver);
                 }
             }
-            return context.CompleteHandled;
+            return context.Handled;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace FS.Extends
 
         internal static void AddScoped(this IDependencyTable dependencyTable, IResolverContext context, IDependencyResolver resolver)
         {
-            dependencyTable.ScopedTable.Add(DependencyTableExtends.GetScopedKey(context, resolver), context.CompleteValue);
+            dependencyTable.ScopedTable.Add(DependencyTableExtends.GetScopedKey(context, resolver), context.Value);
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿namespace FS.DI.Core
 {
     /// <summary>
-    /// 服务注册器
+    ///     依赖服务注册器
     /// </summary>
     public interface IDependencyRegister
     {
         /// <summary>
-        /// 依赖注入注册
+        ///     注册依赖服务对象
         /// </summary>
         void RegisterEntry(DependencyEntry dependencyEntry);
     }

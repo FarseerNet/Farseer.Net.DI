@@ -7,7 +7,7 @@ namespace FS.DI.Core
     public static class DependencyResolverExtensions
     {
         /// <summary>
-        /// 解析服务
+        ///     解析依赖服务
         /// </summary>
         public static TService Resolve<TService>(this IDependencyResolver dependencyResolver)
             where TService : class
@@ -17,7 +17,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 解析服务集合
+        ///     解析依赖服务集合
         /// </summary>
         public static IEnumerable<TService> ResolveAll<TService>(this IDependencyResolver dependencyResolver)
             where TService : class

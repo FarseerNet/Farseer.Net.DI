@@ -1,5 +1,5 @@
 ﻿using FS.DI.Core;
-using FS.DI.Resolver;
+using FS.DI.Resolve;
 using System.Linq;
 
 namespace FS.Extends
@@ -11,7 +11,7 @@ namespace FS.Extends
         /// </summary>
         internal static bool NotComplete(this IResolverContext context)
         {
-            return !context.CompleteHandled;
+            return !context.Handled;
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace FS.DI.Tests.Infrastructure
+﻿using FS.DI.Tests.DynamicProxy;
+
+namespace FS.DI.Tests.Infrastructure
 {
     public class UserRepository : IUserRepository, IRepository<UserEntity>
     {
@@ -8,7 +10,9 @@
         {
             this.Logger = UnKownLogger.Instance;
         }
-        public UserEntity GetById(int id)
+
+        [MethodTimer]
+        public virtual UserEntity GetById(int id)
         {
             Logger.Debug("UserRepository.GetById Invoke  /  id:" + id);
             return new UserEntity { Id = id, Name = "user" + id };

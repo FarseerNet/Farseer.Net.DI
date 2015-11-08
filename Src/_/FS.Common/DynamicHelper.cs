@@ -298,6 +298,10 @@ namespace FS.Common
                 //}).
                 //Catch(il => ExcepionIntercept(il, interceptors, local)).EndException();
             }
+            else
+            {
+                method(ilGenerator);
+            }
         }
 
         /// <summary>
@@ -316,6 +320,8 @@ namespace FS.Common
                 var set_InterceptedType = invocationType.GetMethod("set_InterceptedType");
                 var set_InterceptedInstance = invocationType.GetMethod("set_InterceptedInstance");
                 var set_Parameter = invocationType.GetMethod("set_Parameter");
+                var get_Parameter = invocationType.GetMethod("get_Parameter");
+                var get_Value = parameterType.GetMethod("get_Value");
                 var set_ReturnType = parameterType.GetMethod("set_ReturnType");
                 var set_Value = parameterType.GetMethod("set_Value");
                 var get_ReturnType = typeof(MethodInfo).GetMethod("get_ReturnType");
@@ -340,6 +346,7 @@ namespace FS.Common
                 ilGenerator.LoadLocal(invocationLocal).LoadLocal(parameterLocal).Callvirt(set_Parameter);
                 ilGenerator.ForEach(returnValueInvocations, (_, invocation, index) => _
                         .LoadLocal(interceptorLocal).LoadArrayItem(index).LoadLocal(invocationLocal).Callvirt(on_Intercept));
+                ilGenerator.LoadLocal(parameterLocal).Callvirt(get_Value).StoreLocal(local[3]);
                 //}).
                 //Catch(il => ExcepionIntercept(il, interceptors, local)).EndException();
             }

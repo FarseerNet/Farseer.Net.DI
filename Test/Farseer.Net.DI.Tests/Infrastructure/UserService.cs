@@ -1,10 +1,12 @@
-﻿namespace FS.DI.Tests.Infrastructure
+﻿using FS.DI.Core;
+
+namespace FS.DI.Tests.Infrastructure
 {
     public class UserService : IUserService
     {
         private readonly IRepository<UserEntity> _userRepository;
 
-        [Core.IgnoreDependency]
+        [IgnoreDependency]
         public ILogger Logger { get; set; }
         public UserService(IRepository<UserEntity> userRepository)
         {

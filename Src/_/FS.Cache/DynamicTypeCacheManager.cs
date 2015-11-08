@@ -29,7 +29,7 @@ namespace FS.Cache
             {
                 if (CacheList.ContainsKey(_key)) return CacheList[_key];
 
-                return (CacheList[_key] = DynamicTypeProvider.Current.CreateDynamicType(_key));
+                return (CacheList[_key] = DynamicTypeProvider.Current.CreateType(_key));
             }
         }
 

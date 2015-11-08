@@ -17,7 +17,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     创建动态类型
         /// </summary>
-        public Type CreateDynamicType(Type parentType)
+        public Type CreateType(Type parentType)
         {
             return _dynamicTypeMap.GetOrAdd(parentType, _ =>
             {
@@ -36,19 +36,11 @@ namespace FS.DI.DynamicProxy
         }
 
         /// <summary>
-        ///     创建类型
-        /// </summary>
-        public static Type CreateType(Type parentType)
-        {
-            return new InternalDynamicTypeProvider().CreateDynamicType(parentType);
-        }
-
-        /// <summary>
-        ///     创建类型
+        ///     创建动态类型
         /// </summary>
         public static Type CreateType<T>()
         {
-            return CreateType(typeof(T));
+            return new InternalDynamicTypeProvider().CreateType(typeof(T));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace FS.DI.DynamicProxy
 
         private IDynamicTypeProvider _current;
 
-        public DynamicTypeProvider()
+        private DynamicTypeProvider()
         {
             this.InnerSetProvider(new DefaultDynamicTypeProvider());
         }
@@ -70,13 +70,13 @@ namespace FS.DI.DynamicProxy
         /// </summary>
         private class DefaultDynamicTypeProvider : IDynamicTypeProvider
         {
-            public Type CreateDynamicType(Type parentType)
+            public Type CreateType(Type parentType)
             {
                 try
                 {
                     if (parentType.IsInterface)
                         throw new MissingMethodException("无法创建接口的实例。");
-                    if(parentType.IsAbstract)
+                    if (parentType.IsAbstract)
                         throw new MissingMethodException("无法创建抽象类的实例。");
                     var builder = DynamicHelper.ModuleBuilder.
                         DefineProxyType(parentType).DefineConstructors(parentType).DefineOverrideMethods(parentType);
@@ -103,7 +103,7 @@ namespace FS.DI.DynamicProxy
                 _creator = creator;
             }
 
-            public Type CreateDynamicType(Type parentType)
+            public Type CreateType(Type parentType)
             {
                 if (parentType == null) throw new ArgumentNullException(nameof(parentType));
                 return _creator(parentType);

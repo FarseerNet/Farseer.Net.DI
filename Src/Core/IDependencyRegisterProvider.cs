@@ -1,14 +1,14 @@
 ﻿namespace FS.DI.Core
 {
     /// <summary>
-    /// 服务注册器提供者
+    ///     依赖服务注册器提供者
     /// </summary>
     public interface IDependencyRegisterProvider
     {
         /// <summary>
-        /// 创建服务注册器
+        ///     创建依赖服务注册器
         /// </summary>
-        /// <returns></returns>
+        /// <returns>依赖服务注册器</returns>
         IDependencyRegister CreateRegister();
     }
 }
