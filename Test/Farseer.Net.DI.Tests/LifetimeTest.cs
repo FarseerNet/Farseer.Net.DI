@@ -95,6 +95,38 @@ namespace FS.DI.Tests
                     }
                 }
             }
+
+            IFarseerContainer c1 = new FarseerContainer();
+            ///创建注册器
+            IDependencyRegister register1 = c1.CreateRegister();
+            ///注册瞬时生命周期的类型
+            register1.RegisterType<IUserRepository, UserRepository>().AsScopedLifetime();
+            ///创建解析器
+            using (IDependencyResolver resolver = c1.CreateResolver())
+            {
+                IUserRepository userRepository1 = resolver.Resolve<IUserRepository>();
+                ///创建作用域
+                using (IScopedResolver scoped = resolver.CreateScopedResolver())
+                {
+                    IUserRepository scopedRepository1 = scoped.Resolve<IUserRepository>();
+                    IUserRepository scopedRepository2 = scoped.Resolve<IUserRepository>();
+
+                    Assert.AreNotEqual<IUserRepository>(userRepository1, scopedRepository1);
+
+                    Assert.AreEqual<IUserRepository>(scopedRepository1, scopedRepository2);
+                    ///创建作用域
+                    using (IScopedResolver scoped1 = scoped.CreateScopedResolver())
+                    {
+                        IUserRepository scopedRepository3 = scoped1.Resolve<IUserRepository>();
+                        IUserRepository scopedRepository4 = scoped1.Resolve<IUserRepository>();
+
+                        Assert.AreNotEqual<IUserRepository>(userRepository1, scopedRepository3);
+                        Assert.AreNotEqual<IUserRepository>(scopedRepository1, scopedRepository3);
+
+                        Assert.AreEqual<IUserRepository>(scopedRepository3, scopedRepository4);
+                    }
+                }
+            }
         }
     }
 }

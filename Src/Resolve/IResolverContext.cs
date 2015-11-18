@@ -16,7 +16,7 @@ namespace FS.DI.Resolve
         /// <summary>
         /// 上下文对象
         /// </summary>
-        Object Value { get; set; }
+        Object Resolved { get; set; }
 
         /// <summary>
         /// DependencyEntry

@@ -10,7 +10,7 @@ namespace FS.DI.Core
     public static class DependencyRegisterExtensions
     {
         /// <summary>
-        /// 注册 Type
+        ///     注册类型为依赖服务
         /// </summary>
         public static IDependencyRegistration RegisterType(this IDependencyRegister dependencyRegister, Type serviceType)
         {
@@ -19,7 +19,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 Type
+        ///      注册类型和实现类型为依赖服务
         /// </summary>
         public static IDependencyRegistration RegisterType(this IDependencyRegister dependencyRegister, Type serviceType, Type implementationType)
         {
@@ -31,7 +31,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 Type
+        ///      注册类型和实现类型为依赖服务
         /// </summary>
         public static IDependencyRegistration RegisterType<TService, TImplementation>(this IDependencyRegister dependencyRegister)
             where TImplementation : TService
@@ -40,7 +40,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 Type
+        ///     注册类型为依赖服务
         /// </summary>
         public static IDependencyRegistration RegisterType<TService>(this IDependencyRegister dependencyRegister)
         {
@@ -48,7 +48,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 实例
+        ///     注册实例为依赖服务
         /// </summary>
         public static ISingletonRegistration<ISingletonRegistration> RegisterInstance(this IDependencyRegister dependencyRegister, Object instance)
         {
@@ -58,7 +58,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 实例
+        ///     注册类型和实现实例为依赖服务
         /// </summary>
         public static ISingletonRegistration<ISingletonRegistration> RegisterInstance(this IDependencyRegister dependencyRegister, Type serviceType, Object implementationInstance)
         {
@@ -70,7 +70,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 实例
+        ///     注册类型和实现实例为依赖服务
         /// </summary>
         public static ISingletonRegistration<ISingletonRegistration> RegisterInstance<TService>(this IDependencyRegister dependencyRegister, Object instance)
         {
@@ -80,7 +80,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 委托
+        ///     注册类型和返回实现实例的委托为依赖服务
         /// </summary>
         public static ILifetimeRegistration<ILifetimeRegistration> RegisterDelegate<TImplementation>(this IDependencyRegister dependencyRegister, Type serviceType, Func<IDependencyResolver, TImplementation> implementationDelegate)
             where TImplementation : class
@@ -93,7 +93,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 委托
+        ///     注册类型和返回实现实例的委托为依赖服务
         /// </summary>
         public static ILifetimeRegistration<ILifetimeRegistration> RegisterDelegate<TService, TImplementation>(this IDependencyRegister dependencyRegister, Func<IDependencyResolver, TImplementation> implementationDelegate)
             where TImplementation : class, TService
@@ -105,7 +105,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 程序集
+        ///     注册程序集中类型作为依赖服务
         /// </summary>
         public static IEnumerableRegistration RegisterAssembly(this IDependencyRegister dependencyRegister, Assembly assembly)
         {
@@ -116,7 +116,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 程序集
+        ///     注册程序集中使用特定命名约定的类型作为依赖服务
         /// </summary>
         public static IEnumerableRegistration RegisterAssembly(this IDependencyRegister dependencyRegister, Assembly assembly, String name)
         {
@@ -128,7 +128,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 程序集
+        ///    注册程序集中使实现特定接口或基类的类型作为依赖服务
         /// </summary>
         public static IEnumerableRegistration RegisterAssembly(this IDependencyRegister dependencyRegister, Assembly assembly, Type baseType)
         {
@@ -140,7 +140,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 程序集
+        ///        注册程序集中符合过滤条件的类型作为依赖服务    
         /// </summary>
         public static IEnumerableRegistration RegisterAssembly(this IDependencyRegister dependencyRegister, Assembly assembly, Func<Type, bool> predicate)
         {
@@ -152,7 +152,7 @@ namespace FS.DI.Core
         }
 
         /// <summary>
-        /// 注册 程序集
+        ///    注册程序集中使实现特定接口或基类的类型作为依赖服务
         /// </summary>
         public static IEnumerableRegistration RegisterAssembly<TBaseService>(this IDependencyRegister dependencyRegister, Assembly assembly)
           where TBaseService : class

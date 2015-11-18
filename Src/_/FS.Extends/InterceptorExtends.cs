@@ -1,5 +1,5 @@
 ﻿using FS.Cache;
-using FS.DI.DynamicProxy;
+using FS.Extends;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,8 +7,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace FS.Extends
+namespace FS.DI.DynamicProxy
 {
+    /// <summary>
+    ///     一个代码很乱的类，请忽略。
+    /// </summary>
     public static class InterceptorExtends
     {
         /// <summary>
@@ -33,7 +36,7 @@ namespace FS.Extends
             ///获取返回值拦截器
             interceptors = interceptors.Concat(method.ReturnTypeCustomAttributes.GetCustomAttributes(false).ToInterceptor());
             ///获取自定义拦截器
-            interceptors = interceptors.Concat(CustomInterceptorCacheManager.Cache(parentType));
+            interceptors = interceptors.Concat(CustomInterceptorCacheManager.GetCache(parentType));
             return interceptors.ToArray();
         }
 
@@ -91,18 +94,12 @@ namespace FS.Extends
             return interceptors.Where(i => i is IMethodInterceptor).Select(i => (IMethodInterceptor)i).OrderBy(i => i.ExecutedOrder).ToArray();
         }
 
-        /// <summary>
-        ///     获取被拦截的方法
-        /// </summary>
         public static MethodInfo GetInterceptedMethod()
         {
             var proxyMethod = new StackFrame(1).GetMethod() as MethodInfo;
             return proxyMethod.DeclaringType.BaseType.GetMethods().First(m => m.EqualMethod(proxyMethod));
         }
 
-        /// <summary>
-        ///     获取被拦截的接口方法
-        /// </summary>
         public static MethodInfo GetIntercepted_IMethod(String @interface)
         {
             var proxyMethod = new StackFrame(1).GetMethod() as MethodInfo;
@@ -110,9 +107,6 @@ namespace FS.Extends
             return interfaceType.GetMethods().First(m => m.EqualMethod(proxyMethod));
         }
 
-        /// <summary>
-        ///     将当前泛型方法定义的类型参数替换为类型数组的元素，并返回表示结果构造方法的 System.Reflection.MethodInfo 对象。
-        /// </summary>
         public static MethodInfo MakeGenericMethod(MethodInfo method)
         {
             return method.MakeGenericMethod(method.GetGenericArguments().Select(s => s).ToArray());

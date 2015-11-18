@@ -21,9 +21,8 @@ namespace FS.DI.DynamicProxy
         {
             return _dynamicTypeMap.GetOrAdd(parentType, _ =>
             {
-                if (_dynamicTypeMap.ContainsKey(parentType)) return _dynamicTypeMap[parentType];
                 var name = "_" + (parentType.IsInterface ? parentType.Name.Substring(1) : parentType.Name);
-                var builder = DynamicHelper.ModuleBuilder.DefineType(name, TypeAttributes.NotPublic,
+                var builder = DynamicAssembly.Current.ModuleBuilder.DefineType(name, TypeAttributes.NotPublic,
                     parentType.IsClass ? parentType : typeof(Object),
                     parentType.IsClass ? parentType.GetInterfaces() : new Type[] { parentType }.Concat(parentType.GetInterfaces()).ToArray());
                 parentType.GetProperties().Where(p => p.GetGetMethod().IsAbstract).ForEach(property => DynamicHelper.DefineProperty(builder, property));

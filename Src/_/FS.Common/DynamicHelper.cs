@@ -7,33 +7,14 @@ using System.Reflection.Emit;
 
 namespace FS.Common
 {
+    /// <summary>
+    ///     一个代码很乱的类，请忽略。
+    /// </summary>
     internal static class DynamicHelper
     {
-        /// <summary>
-        ///     动态程序集名称
-        /// </summary>
-        internal static AssemblyName AssemblyName { get; } = new AssemblyName("Farseer.Net.DI._Dynamic");
 
-        /// <summary>
-        ///     动态程序集
-        /// </summary>
-        internal static AssemblyBuilder AssemblyBuilder { get; } = AppDomain.CurrentDomain.DefineDynamicAssembly(AssemblyName, AssemblyBuilderAccess.Run);
-
-        /// <summary>
-        ///     动态模块
-        /// </summary>
-        //internal static ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(AssemblyName.Name, AssemblyName.Name + ".dll");
-        internal static ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(AssemblyName.Name);
-
-
-        /// <summary>
-        ///     返回动态类型的name
-        /// </summary>
         internal static String DynamicTypeName(this Type parentType) => "_Dynamic" + parentType.Name;
 
-        /// <summary>
-        ///     构造指定基类的TypeBuilder
-        /// </summary>
         internal static TypeBuilder DefineProxyType(this ModuleBuilder moduleBuilder, Type parentType)
         {
             if (parentType == null) throw new ArgumentNullException(nameof(parentType));
@@ -43,22 +24,18 @@ namespace FS.Common
                 throw new InvalidOperationException("非公共类型\"" + parentType.FullName + "\"不能生成代理类。");
             if (parentType.IsSealed)
                 throw new InvalidOperationException("封闭类型\"" + parentType.FullName + "\"不能生成代理类。");
-
+      
             return moduleBuilder.DefineType(parentType.DynamicTypeName(), parentType.Attributes, parentType, parentType.GetInterfaces());
         }       
 
-        /// <summary>
-        ///     根据指定基类的构造方法，向类型中添加构造方法
-        /// </summary>
+
         internal static TypeBuilder DefineConstructors(this TypeBuilder typeBuilder, Type parentType)
         {
             parentType.GetConstructors().ForEach(constructor => typeBuilder.DefineConstructor(constructor.Attributes, constructor.CallingConvention, constructor.GetParameterTypes().ToArray()).GetILGenerator().CallBaseConstructor(constructor).Return());
             return typeBuilder;
         }
 
-        /// <summary>
-        ///     根据指定基类，向类型中添加重写的方法
-        /// </summary>
+
         internal static TypeBuilder DefineOverrideMethods(this TypeBuilder typeBuilder, Type parentType)
         {
             var methods = parentType.GetProxyMethods();
@@ -109,9 +86,6 @@ namespace FS.Common
             return typeBuilder;
         }
 
-        /// <summary>
-        ///     根据指定接口，向类型中添加显示实现的方法
-        /// </summary>
         internal static TypeBuilder DefineExplicitInterfaceMethods(this TypeBuilder typeBuilder, Type interfaceType, Type parentType)
         {
             var methods = interfaceType.GetProxyMethods();
@@ -162,9 +136,6 @@ namespace FS.Common
             return typeBuilder;
         }
 
-        /// <summary>
-        ///     方法参数拦截
-        /// </summary>>
         private static void ParameterIntercept(ILGenerator ilGenerator, IInterceptor[] interceptors, LocalBuilder[] local, MethodInfo method)
         {
             var parameterInterceptors = interceptors.GetParameterInterceptors();
@@ -218,9 +189,6 @@ namespace FS.Common
             }
         }
 
-        /// <summary>
-        ///     异常拦截
-        /// </summary>
         private static void ExcepionIntercept(ILGenerator ilGenerator, IInterceptor[] interceptors, LocalBuilder[] local)
         {
             var excepionInterceptors = interceptors.GetExcepionInterceptors();
@@ -255,9 +223,6 @@ namespace FS.Common
             }
         }
 
-        /// <summary>
-        ///     方法拦截
-        /// </summary>
         private static void MethodIntercept(ILGenerator ilGenerator, IInterceptor[] interceptors, LocalBuilder[] local, bool[] boolean, Action<ILGenerator> method)
         {
             var methodInterceptors = interceptors.GetMethodInterceptor();
@@ -304,9 +269,6 @@ namespace FS.Common
             }
         }
 
-        /// <summary>
-        ///     方法返回拦截
-        /// </summary>
         private static void ReturnIntercept(ILGenerator ilGenerator, IInterceptor[] interceptors,
             LocalBuilder[] local /* interceptorsLocal,interceptedMethodLocal,interceptedTypeLocal */,
             bool[] boolean /*hasValue,*/)
@@ -352,9 +314,6 @@ namespace FS.Common
             }
         }
 
-        /// <summary>
-        ///     将当前泛型方法定义的类型参数替换为类型数组的元素
-        /// </summary>
         internal static ILGenerator MakeGenericMethod(ILGenerator ilGenerator, MethodInfo method, LocalBuilder interceptedMethodLocal)
         {
             if (method.IsGenericMethod)
@@ -371,12 +330,6 @@ namespace FS.Common
             return ilGenerator;
         }
 
-        /// <summary>
-        ///     定义重写的方法
-        /// </summary>
-        /// <param name="typeBuilder"></param>
-        /// <param name="method"></param>
-        /// <returns></returns>
         internal static MethodBuilder DefineOverrideMethod(this TypeBuilder typeBuilder, MethodInfo method)
         {
             var builder= typeBuilder.DefineMethod(method.Name, method.GetAttributes(), method.CallingConvention, method.ReturnType, method.GetParameterTypes().ToArray());
@@ -387,9 +340,7 @@ namespace FS.Common
             return builder;
         }
 
-        /// <summary>
-        ///     定义显式实现的接口方法
-        /// </summary>
+      
         internal static MethodBuilder DefineExplicitInterfaceMethod(this TypeBuilder typeBuilder, MethodInfo method)
         {
             var builder = typeBuilder.DefineMethod(method.DeclaringType.FullName + "." + method.Name,
@@ -403,9 +354,7 @@ namespace FS.Common
             return builder;
         }
 
-        /// <summary>
-        ///     根据指定的方法，在动态方法中添加泛型参数和泛型约束
-        /// </summary>
+   
         internal static MethodBuilder DefineGeneric(this MethodBuilder methodBuilder, MethodInfo method)
         {
             var genericArguments = method.GetGenericArguments();
@@ -422,9 +371,7 @@ namespace FS.Common
             return methodBuilder;
         }
 
-        /// <summary>
-        ///     向类型中添加属性的方法
-        /// </summary>      
+      
         internal static TypeBuilder DefineProperty(this TypeBuilder builder, PropertyInfo property)
         {
             var attributes = MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual;
@@ -445,11 +392,7 @@ namespace FS.Common
             return builder;
         }
       
-        /// <summary>
-        ///     获取重写方法的属性
-        /// </summary>
-        /// <param name="method"></param>
-        /// <returns></returns>
+   
         private static MethodAttributes GetAttributes(this MethodInfo method)
         {
             MethodAttributes attributes = MethodAttributes.Virtual;

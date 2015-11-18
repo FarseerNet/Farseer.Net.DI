@@ -70,8 +70,7 @@ namespace FS.DI.Registration
         internal static IEnumerableRegistration ForAssembly(Assembly assembly, Func<Type, bool> typeFilter, Func<Type, bool> serviceTypeFilter = null)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
-
-            
+           
             var registerTypes = new TypeFinder(assembly).Find(typeFilter);
 
             return new EnumerableRegistration(

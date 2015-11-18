@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace FS.DI.Tests.Infrastructure
 {
-    public class CustomInterceptor : ICustomInterceptor
+    public class CustomInterceptor : ICustomInterceptor, IMethodInterceptor
     {
         public int ExecutedOrder { get; } = 0;
 

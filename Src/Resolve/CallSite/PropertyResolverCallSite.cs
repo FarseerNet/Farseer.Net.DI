@@ -1,10 +1,9 @@
 ﻿using FS.Cache;
 using FS.DI.Core;
-using FS.Extends;
 using System;
 using System.Linq;
 using System.Reflection;
- 
+
 namespace FS.DI.Resolve.CallSite
 {
     /// <summary>
@@ -12,29 +11,23 @@ namespace FS.DI.Resolve.CallSite
     /// </summary>
     internal sealed class PropertyResolverCallSite : IResolverCallSite
     {
-        private readonly IDependencyTable _dependencyTable;
-        public PropertyResolverCallSite(IDependencyTable dependencyTable)
-        {
-            if (dependencyTable == null) throw new ArgumentNullException(nameof(dependencyTable));
-            _dependencyTable = dependencyTable;
-        }
         public bool Requires(IResolverContext context, IDependencyResolver resolver)
         {
-            return context.NotComplete();
+            return context.NotResolved();
         }
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var properties = context.Value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).
-                Where(property => _dependencyTable.PropertyEntryTable.ContainsKey(property.PropertyType));
+            var properties = PropertyCacheManager.GetOrSetCache(context.DependencyEntry, () =>
+                context.Resolved.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).
+                Where(property => DependencyEntryCacheManager.GetCache((IScopedResolver)resolver).
+                Any(d => property.PropertyType == d.ServiceType) &&
+                !property.IsDefined(typeof(IgnoreDependencyAttribute), false)));
             foreach (var property in properties)
             {
                 try
                 {
-                    if (!property.IsDefined(typeof(IgnoreDependencyAttribute), false))
-                    {
-                        PropertySetCacheManger.Cache(property, context.Value, resolver.Resolve(property.PropertyType));
-                    }
+                    PropertySetCacheManger.Cache(property, context.Resolved, resolver.Resolve(property.PropertyType));
                 }
                 catch (Exception ex)
                 {

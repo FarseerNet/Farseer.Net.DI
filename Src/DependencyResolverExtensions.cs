@@ -1,4 +1,7 @@
-﻿using System;
+﻿using FS.Cache;
+using FS.DI.Resolve;
+using FS.Extends;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,7 +26,24 @@ namespace FS.DI.Core
             where TService : class
         {
             if (dependencyResolver == null) throw new ArgumentNullException(nameof(dependencyResolver));
-            return dependencyResolver.ResolveAll(typeof(TService)).Select(t => (TService)t);
+            return dependencyResolver.ResolveAll(typeof(TService)).Select(t => (TService)t).Distinct(t => t.GetType());
+        }
+
+        /// <summary>
+        ///     添加解析器调用
+        /// </summary>
+        public static void AddCallSite(this IDependencyResolver dependencyResolver, params IResolverCallSite[] callSites)
+        {
+            CallSiteCacheManager.SetCache(dependencyResolver, callSites);
+        }
+
+        /// <summary>
+        ///     移除所有解析器调用
+        /// </summary>
+        /// <param name="dependencyResolver"></param>
+        public static void RemoveAllCallSites(this IDependencyResolver dependencyResolver)
+        {
+            CallSiteCacheManager.Clear();
         }
     }
 }

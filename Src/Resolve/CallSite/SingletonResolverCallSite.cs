@@ -1,6 +1,5 @@
-﻿using FS.DI.Core;
-using FS.Extends;
-using System;
+﻿using FS.Cache;
+using FS.DI.Core;
 
 namespace FS.DI.Resolve.CallSite
 {
@@ -9,25 +8,16 @@ namespace FS.DI.Resolve.CallSite
     /// </summary>
     internal sealed class SingletonResolverCallSite : IResolverCallSite
     {
-        private readonly IDependencyTable _dependencyTable;
-        public SingletonResolverCallSite(IDependencyTable dependencyTable)
-        {
-            if (dependencyTable == null) throw new ArgumentNullException(nameof(dependencyTable));
-            _dependencyTable = dependencyTable;
-        }
         public bool Requires(IResolverContext context, IDependencyResolver resolver)
         {
-            return context.NotComplete() && context.IsSingletonLifetime();
+            return context.NotResolved() && context.IsSingletonLifetime();
         }
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
-        {
-            Object completeValue;
-            if (_dependencyTable.TryGetScoped(context, null, out completeValue))
-            {
-                context.Value = completeValue;
-                context.Handled = true;
-            }        
+        {   
+            var single = ScopedCacheManager.GetCache(((DependencyResolver)resolver).RootScoped, context.DependencyEntry);
+            context.Resolved = single;
+            context.Handled = single != null;
         }
     }
 }

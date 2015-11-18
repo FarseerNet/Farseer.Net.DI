@@ -78,7 +78,7 @@ namespace FS.DI.DynamicProxy
                         throw new MissingMethodException("无法创建接口的实例。");
                     if (parentType.IsAbstract)
                         throw new MissingMethodException("无法创建抽象类的实例。");
-                    var builder = DynamicHelper.ModuleBuilder.
+                    var builder = DynamicAssembly.Current.ModuleBuilder.
                         DefineProxyType(parentType).DefineConstructors(parentType).DefineOverrideMethods(parentType);
                     parentType.GetInterfaces().ForEach(interfaceType =>
                         builder.DefineExplicitInterfaceMethods(interfaceType, parentType));

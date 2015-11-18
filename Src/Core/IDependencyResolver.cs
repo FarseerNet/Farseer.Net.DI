@@ -9,10 +9,6 @@ namespace FS.DI.Core
     /// </summary>
     public interface IDependencyResolver : IServiceProvider, IScopedResolverProvider, IDisposable
     {
-        /// <summary>
-        ///     服务解析器集合
-        /// </summary>
-        ICallSiteCollection CallSiteCollection { get; }
 
         /// <summary>
         ///     解析依赖服务

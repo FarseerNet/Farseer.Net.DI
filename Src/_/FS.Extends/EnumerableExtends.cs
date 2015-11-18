@@ -20,6 +20,9 @@ namespace FS.Extends
             }
         }
 
+        /// <summary>
+        ///     对集合中的每个元素执行指定操作
+        /// </summary>
         public static IEnumerable<TSource>  ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
             foreach (var item in source)
@@ -27,6 +30,9 @@ namespace FS.Extends
             return source;
         }
 
+        /// <summary>
+        ///     对集合中的每个元素执行指定操作
+        /// </summary>
         public static IEnumerable<TSource> ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource, int> action)
         {
             int index = 0;

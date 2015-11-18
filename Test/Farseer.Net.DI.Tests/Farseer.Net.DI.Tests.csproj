@@ -60,6 +60,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ConstructorInjectionTest.cs" />
+    <Compile Include="DisposableTest.cs" />
+    <Compile Include="DynamicProxy\CustomInterceptorTest.cs" />
     <Compile Include="DynamicProxy\DynamicTypeProviderTest.cs" />
     <Compile Include="DynamicProxy\DynamicActivatorTest.cs" />
     <Compile Include="DynamicProxy\ExceptionInterceptorTest.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="DynamicProxy\MethodInterceptorTest.cs" />
     <Compile Include="DynamicProxy\ParameterInterceptorTest.cs" />
     <Compile Include="DynamicProxy\ReturnInterceptorTest.cs" />
+    <Compile Include="Extensions\ClassExtensionTest.cs" />
     <Compile Include="Infrastructure\CustomInterceptor.cs" />
     <Compile Include="Infrastructure\IDependency.cs" />
     <Compile Include="Infrastructure\ILogger.cs" />

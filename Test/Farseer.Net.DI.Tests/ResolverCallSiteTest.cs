@@ -29,9 +29,9 @@ namespace FS.DI.Tests
             using (IDependencyResolver resolver = container.CreateResolver())
             {
                 ///清除默认解析器
-                resolver.CallSiteCollection.RemoveAll();
+                resolver.RemoveAllCallSites();
                 ///添加自定义解析器
-                resolver.CallSiteCollection.Add(new CustomResolverCallSite());
+                resolver.AddCallSite(new CustomResolverCallSite());
 
                 IUserService service = resolver.Resolve<IUserService>();
                 Assert.IsNotNull(service);
@@ -60,7 +60,7 @@ namespace FS.DI.Tests
             Object[] args = GetParameterValues(constructor, resolver);
 
             ///设置解析结果
-            context.Value = constructor.Invoke(args);
+            context.Resolved = constructor.Invoke(args);
             ///解析完成
             context.Handled = true;
         }

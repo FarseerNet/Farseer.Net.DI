@@ -2,6 +2,9 @@
 
 namespace FS.DI.DynamicProxy
 {
+    /// <summary>
+    ///     异常代理调用
+    /// </summary>
     public interface IExceptionInvocation : IInvocation
     {
         /// <summary>

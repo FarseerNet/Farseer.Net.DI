@@ -12,7 +12,7 @@ namespace FS.DI.Core
     public sealed class FarseerContainer : IFarseerContainer, IDependencyRegisterProvider, IDependencyResolverProvider
     {
         private readonly Object _sync = new Object();
-       
+
         private readonly IDictionary<Type, DependencyEntry> _dependencyDictionary;
 
         private IDependencyRegisterProvider _dependencyRegisterProvider;
@@ -110,20 +110,56 @@ namespace FS.DI.Core
                 _dependencyDictionary.Clear();
             }
         }
-       
+
+        /// <summary>
+        ///     创建依赖服务注册器
+        /// </summary>
+        /// <returns>依赖服务注册器</returns>
         public IDependencyRegister CreateRegister() => _dependencyRegisterProvider.CreateRegister();
-       
+
+        /// <summary>
+        ///     创建依赖服务注册器
+        /// </summary>
+        /// <returns>依赖服务注册器</returns>
         IDependencyRegister IDependencyRegisterProvider.CreateRegister() => new Registration.DependencyRegister(this);
-       
+
+        /// <summary>
+        ///     创建依赖服务解析器
+        /// </summary>
+        /// <returns>依赖服务解析器</returns>
         public IDependencyResolver CreateResolver() => _dependencyResolverProvider.CreateResolver();
 
-      
+        /// <summary>
+        ///     创建依赖服务解析器
+        /// </summary>
+        /// <returns>依赖服务解析器</returns>
         IDependencyResolver IDependencyResolverProvider.CreateResolver() => new Resolve.DependencyResolver(this);
-       
+
+        /// <summary>
+        ///     设置依赖服务注册器提供者
+        /// </summary>
+        /// <param name="registerProvider">依赖服务注册器提供者</param>
         public void SetRegisterProvider(IDependencyRegisterProvider dependencyRegisterProvider)
         {
             if (dependencyRegisterProvider == null) throw new ArgumentNullException(nameof(dependencyRegisterProvider));
             _dependencyRegisterProvider = dependencyRegisterProvider;
+        }
+     
+        public void Dispose()
+        {
+            foreach (var entry in _dependencyDictionary.Values)
+            {
+                if (entry.ImplementationInstance != null)
+                {
+                    var disposable = entry.ImplementationInstance as IDisposable;
+                    if (disposable != null)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                Cache.CompileCacheManager.RemoveCache(entry);
+            }
+            this.Clear();
         }
     }
 }

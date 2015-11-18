@@ -34,6 +34,12 @@ namespace FS.DI.Tests
 
                 IUserService useService = resolver.Resolve<IUserService>();
                 Assert.AreEqual<ILogger>(((UserService)useService).Logger, UnKownLogger.Instance);
+
+                IRepository<UserEntity> userRepository1 = resolver.Resolve<IRepository<UserEntity>>();
+                var logger1 = ((UserRepository)userRepository1).Logger;
+
+                Assert.IsInstanceOfType(logger1, typeof(Logger));
+                Assert.AreNotEqual<ILogger>(logger1, UnKownLogger.Instance);
             }
         }
     }

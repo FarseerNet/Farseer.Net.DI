@@ -1,8 +1,7 @@
 ﻿using FS.DI.Core;
-using FS.Extends;
 using System;
 using System.Linq.Expressions;
- 
+
 namespace FS.DI.Resolve.CallSite
 {
     /// <summary>
@@ -12,7 +11,7 @@ namespace FS.DI.Resolve.CallSite
     {
         public bool Requires(IResolverContext context, IDependencyResolver resolver)
         {
-            return context.NotComplete() && context.HasImplementationInstance();
+            return context.NotResolved() && context.Resolved == null && context.HasImplementationInstance();
         }
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
@@ -21,7 +20,7 @@ namespace FS.DI.Resolve.CallSite
               (_r, _args) =>
               context.DependencyEntry.ImplementationInstance;
 
-            context.Value = factory;
+            context.Resolved = factory;
         }
     }
 }

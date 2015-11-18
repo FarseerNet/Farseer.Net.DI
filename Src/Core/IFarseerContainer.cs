@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FS.DI.Core
@@ -6,7 +7,7 @@ namespace FS.DI.Core
     /// <summary>
     ///     Farseer.IoC容器
     /// </summary>
-    public interface IFarseerContainer : IEnumerable<DependencyEntry>, IDependencyRegisterProvider, IDependencyResolverProvider, IEnumerable
+    public interface IFarseerContainer : IEnumerable<DependencyEntry>, IDependencyRegisterProvider, IDependencyResolverProvider, IEnumerable, IDisposable
     {
         /// <summary>
         ///     获取容器中包含的依赖服务元素数

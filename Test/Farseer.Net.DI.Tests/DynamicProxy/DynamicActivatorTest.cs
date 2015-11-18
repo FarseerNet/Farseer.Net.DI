@@ -27,16 +27,6 @@ namespace FS.DI.Tests.DynamicProxy
             Assert.IsNotNull(proxyService);
             Assert.IsInstanceOfType(proxyService, typeof(UserService));
         }
-
-        [TestMethod]
-        public void CreateInstanceOfInterecptors()
-        {
-            ///使用指定类型的默认构造函数和自定义拦截器来创建该类型的代理实例。
-            var proxy = (CreateInstanceTestClass)DynamicActivator.CreateInstance(typeof(CreateInstanceTestClass), new[] { new CustomInterceptor() });
-            proxy.Foo(null);
-            Assert.IsNotNull(proxy);
-            Assert.IsInstanceOfType(proxy, typeof(CreateInstanceTestClass));
-        }     
     }
     public class CreateInstanceTestClass
     {

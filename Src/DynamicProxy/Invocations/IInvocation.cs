@@ -3,7 +3,7 @@
 namespace FS.DI.DynamicProxy
 {
     /// <summary>
-    /// 代理调用
+    ///     代理调用
     /// </summary>
     public interface IInvocation
     {

@@ -9,6 +9,9 @@ using System.Diagnostics;
 
 namespace FS.DI.DynamicProxy
 {
+    /// <summary>
+    ///     一个代码很乱的类，请忽略。
+    /// </summary>
     internal static class ILGeneratorExtends
     {
         /// <summary>

@@ -10,7 +10,7 @@ namespace FS.DI.Resolve
     {
         public bool Handled { get; set; } = false;
 
-        public object Value { get; set; }
+        public object Resolved { get; set; }
         public DependencyEntry DependencyEntry { get; private set; }
 
         public ResolverContext(DependencyEntry dependencyEntry)
