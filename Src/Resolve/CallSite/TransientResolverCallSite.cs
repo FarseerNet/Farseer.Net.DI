@@ -16,8 +16,9 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var args = context.HasPublicConstructor() ? ResolverHelper.GetConstructorParameters
-                (context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
+            var args = context.HasImplementationType() && context.HasPublicConstructor() ?
+                ResolverHelper.GetConstructorParameters(
+                    context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
             context.Resolved = CompileCacheManager.GetCache(context.DependencyEntry, resolver, args);
             context.Handled = context.Resolved != null && !PropertyCacheManager.Any(context.DependencyEntry);
         }

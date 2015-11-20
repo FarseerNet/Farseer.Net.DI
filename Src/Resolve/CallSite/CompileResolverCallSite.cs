@@ -19,8 +19,9 @@ namespace FS.DI.Resolve.CallSite
         {
             try
             {
-                var args = context.HasPublicConstructor() ? ResolverHelper.GetConstructorParameters(
-                    context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
+                var args = context.HasImplementationType() && context.HasPublicConstructor() ?
+                     ResolverHelper.GetConstructorParameters(
+                     context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
                 context.Resolved = CompileCacheManager.GetOrSetCache(context.DependencyEntry,
                     () => CreateDelegate(context.Resolved as Expression)).
                     Invoke(resolver, args);
