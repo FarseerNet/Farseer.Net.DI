@@ -23,14 +23,15 @@ namespace FS.DI.Resolve.CallSite
         {
             var implType = context.IsDynamicProxy() ?
                DynamicTypeCacheManager.GetCache(context.DependencyEntry.ImplementationType) : context.DependencyEntry.ImplementationType;
-            var constructor = implType.GetBastConstructor(resolver);
+            var constructor = ResolverHelper.GetBastConstructor(implType, resolver);
             if (constructor == null) throw new InvalidOperationException(implType.FullName + "不存在公共构造方法。");
             var parameter = Expression.Parameter(typeof(object[]), "args");
-            var body = Expression.New(constructor, GetConstructorParameters(constructor, parameter));
-            var factory = Expression.Lambda<Func<IDependencyResolver, Object[], Object>>(body,
-               Expression.Parameter(typeof(IDependencyResolver)),
-               parameter);
-            context.Resolved = factory;
+            context.Resolved = Expression.
+                Lambda<Func<IDependencyResolver, Object[], Object>>(
+                Expression.New(constructor,
+                    GetConstructorParameters(constructor, parameter)),
+                Expression.Parameter(typeof(IDependencyResolver)),
+                parameter);
         }
 
         /// <summary>

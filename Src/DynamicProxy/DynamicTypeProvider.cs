@@ -1,5 +1,4 @@
-﻿using FS.Common;
-using FS.Extends;
+﻿using FS.Extends;
 using System;
 
 namespace FS.DI.DynamicProxy
@@ -78,10 +77,13 @@ namespace FS.DI.DynamicProxy
                         throw new MissingMethodException("无法创建接口的实例。");
                     if (parentType.IsAbstract)
                         throw new MissingMethodException("无法创建抽象类的实例。");
+
                     var builder = DynamicAssembly.Current.ModuleBuilder.
                         DefineProxyType(parentType).DefineConstructors(parentType).DefineOverrideMethods(parentType);
+
                     parentType.GetInterfaces().ForEach(interfaceType =>
-                        builder.DefineExplicitInterfaceMethods(interfaceType, parentType));
+                        DynamicHelper.DefineExplicitInterfaceMethods(builder, interfaceType, parentType));
+
                     return builder.CreateType();
                 }
                 catch (Exception ex)

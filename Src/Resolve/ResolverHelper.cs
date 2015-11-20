@@ -86,7 +86,7 @@ namespace FS.DI.Resolve
         /// <summary>
         ///     返回最佳构造方法
         /// </summary>
-        internal static ConstructorInfo GetBastConstructor(this Type type, IDependencyResolver resolver)
+        internal static ConstructorInfo GetBastConstructor(Type type, IDependencyResolver resolver)
         {
             var constructors = type.GetConstructors().OrderBy(ctor => ctor.GetParameters().Length).ToArray();
             if (constructors.Length == 0)
@@ -127,9 +127,9 @@ namespace FS.DI.Resolve
             throw new InvalidOperationException("类型\"" + type.FullName + "\"未找到合适的构造方法。");
         }
 
-        internal static Object[] GetConstructorParameters(this Type type, IDependencyResolver resolver)
+        internal static Object[] GetConstructorParameters(Type type, IDependencyResolver resolver)
         {
-            return type.GetBastConstructor(resolver).
+            return GetBastConstructor(type, resolver).
                     GetParameters().
                     Select(p => resolver.Resolve(p.ParameterType)).
                     ToArray();

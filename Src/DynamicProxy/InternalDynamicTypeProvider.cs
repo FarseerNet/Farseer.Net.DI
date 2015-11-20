@@ -1,5 +1,4 @@
-﻿using FS.Common;
-using FS.Extends;
+﻿using FS.Extends;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -22,14 +21,22 @@ namespace FS.DI.DynamicProxy
             return _dynamicTypeMap.GetOrAdd(parentType, _ =>
             {
                 var name = "_" + (parentType.IsInterface ? parentType.Name.Substring(1) : parentType.Name);
+
                 var builder = DynamicAssembly.Current.ModuleBuilder.DefineType(name, TypeAttributes.NotPublic,
                     parentType.IsClass ? parentType : typeof(Object),
                     parentType.IsClass ? parentType.GetInterfaces() : new Type[] { parentType }.Concat(parentType.GetInterfaces()).ToArray());
-                parentType.GetProperties().Where(p => p.GetGetMethod().IsAbstract).ForEach(property => DynamicHelper.DefineProperty(builder, property));
+
+                parentType.GetProperties().
+                    Where(p => p.GetGetMethod().IsAbstract).
+                    ForEach(property => DynamicHelper.DefineProperty(builder, property));
+
                 if (parentType.IsInterface)
                 {
-                    parentType.GetInterfaces().ForEach(type => type.GetProperties().Where(p => p.GetGetMethod().IsAbstract).ForEach(property => DynamicHelper.DefineProperty(builder, property)));
+                    parentType.GetInterfaces().ForEach(type => type.GetProperties().
+                        Where(p => p.GetGetMethod().IsAbstract).
+                        ForEach(property => DynamicHelper.DefineProperty(builder, property)));
                 }
+
                 return builder.CreateType();
             });
         }

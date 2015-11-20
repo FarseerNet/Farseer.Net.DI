@@ -17,13 +17,12 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var implType = context.IsDynamicProxy() ?
-                DynamicTypeCacheManager.GetCache(context.DependencyEntry.ImplementationType) : context.DependencyEntry.ImplementationType;
-            var body = Expression.New(implType);
-            var factory = Expression.Lambda<Func<IDependencyResolver, Object[], Object>>(body,
+            context.Resolved = Expression.Lambda<Func<IDependencyResolver, Object[], Object>>(
+                Expression.New(context.IsDynamicProxy() ?
+                DynamicTypeCacheManager.GetCache(context.DependencyEntry.ImplementationType) :
+                context.DependencyEntry.ImplementationType),
                 Expression.Parameter(typeof(IDependencyResolver)),
                 Expression.Parameter(typeof(Object[])));
-            context.Resolved = factory;
         }
     }
 }

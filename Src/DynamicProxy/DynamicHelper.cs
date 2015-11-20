@@ -1,11 +1,12 @@
 ﻿using FS.DI.DynamicProxy;
 using FS.Extends;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace FS.Common
+namespace FS.DI.DynamicProxy
 {
     /// <summary>
     ///     一个代码很乱的类，请忽略。
@@ -98,7 +99,6 @@ namespace FS.Common
                 if (interceptors.Any())
                 {
                     var methodBuilder = typeBuilder.DefineExplicitInterfaceMethod(method);
-
                     var ilGenerator = methodBuilder.GetILGenerator();
                     var returnValue = method.ReturnType != typeof(void);
                     var returnLocal = default(LocalBuilder);
@@ -113,21 +113,20 @@ namespace FS.Common
                     MakeGenericMethod(ilGenerator, method, interceptedMethodLocal);
                     ParameterIntercept(ilGenerator, interceptors, new LocalBuilder[] { interceptorsLocal, interceptedMethodLocal, interceptedTypeLocal, returnLocal }, method);
                     MethodIntercept(ilGenerator, interceptors,
-                        new LocalBuilder[] { interceptorsLocal, interceptedMethodLocal, interceptedTypeLocal, returnLocal }, new bool[] { returnValue },
-                        _ =>
-                        {
-                            ilGenerator.Try(il =>
-                            {
-                                var baseMethod = parentType.GetMethods().First(m => m.EqualMethod(method));
-                                if (baseMethod == null)
-                                {
-                                    throw new NotImplementedException(parentType.FullName + " 未实现方法 " + method.ToString());
-                                }
-                                ilGenerator.CallBase(baseMethod);
-                                if (returnValue) ilGenerator.StoreLocal(returnLocal);
-                            }).
-                            Catch(il => ExcepionIntercept(il, interceptors, new LocalBuilder[] { interceptorsLocal, interceptedMethodLocal, interceptedTypeLocal })).EndException();
-                        });
+                        new LocalBuilder[] { interceptorsLocal, interceptedMethodLocal, interceptedTypeLocal, returnLocal }, new bool[] { returnValue }, _ =>
+                         {
+                             ilGenerator.Try(il =>
+                             {
+                                 var baseMethod = parentType.GetMethods().First(m => m.EqualMethod(method));
+                                 if (baseMethod == null)
+                                 {
+                                     throw new NotImplementedException(parentType.FullName + " 未实现方法 " + method.ToString());
+                                 }
+                                 ilGenerator.CallBase(baseMethod);
+                                 if (returnValue) ilGenerator.StoreLocal(returnLocal);
+                             }).
+                             Catch(il => ExcepionIntercept(il, interceptors, new LocalBuilder[] { interceptorsLocal, interceptedMethodLocal, interceptedTypeLocal })).EndException();
+                         });
                     ReturnIntercept(ilGenerator, interceptors, new LocalBuilder[] { interceptorsLocal, interceptedMethodLocal, interceptedTypeLocal, returnLocal }, new bool[] { returnValue });
                     if (returnValue) ilGenerator.LoadLocal(returnLocal);
                     ilGenerator.Return();
@@ -156,8 +155,7 @@ namespace FS.Common
                 var on_Intercept = typeof(IParameterInterceptor).GetMethod("OnParameterExecuting");
                 var interceptorLocal = ilGenerator.DeclareLocal(typeof(IParameterInterceptor[]));
                 var parametersLocal = ilGenerator.DeclareLocal(typeof(IParameter[]));
-                //ilGenerator.Try(il =>
-                //{
+
                 ilGenerator.LoadLocal(local[0]).Call(get_ParameterInterceptors).StoreLocal(interceptorLocal);
                 var invocationLocal = ilGenerator.DeclareLocal(invocationType);
                 ilGenerator.New(invocationType.GetConstructor(Type.EmptyTypes)).StoreLocal(invocationLocal);
@@ -184,8 +182,7 @@ namespace FS.Common
                           ilGenerator.LoadLocal(invocationLocal).LoadLocal(parametersLocal).Callvirt(set_Parameters);
                           ilGenerator.LoadLocal(interceptorLocal).LoadArrayItem(i).LoadLocal(invocationLocal).Callvirt(on_Intercept);
                       });
-                //}).
-                //Catch(il => ExcepionIntercept(il, interceptors, local)).EndException();
+               
             }
         }
 
@@ -242,8 +239,6 @@ namespace FS.Common
                 var executedInterceptorLocal = ilGenerator.DeclareLocal(typeof(IMethodInterceptor[]));
                 var invocationLocal = ilGenerator.DeclareLocal(invocationType);
                 var endLable = ilGenerator.DefineLabel();
-                //ilGenerator.Try(il =>
-                //{
                 ilGenerator.LoadLocal(local[0]).
                         Call(get_GetMethodInterceptor).StoreLocal(interceptorLocal);
                 ilGenerator.LoadLocal(local[0]).
@@ -260,8 +255,6 @@ namespace FS.Common
                    _.LoadLocal(invocationLocal).Callvirt(get_ExecutedHandled).
                       False(endLable).LoadLocal(executedInterceptorLocal).LoadArrayItem(index).LoadLocal(invocationLocal).Callvirt(On_MethodExecuted));
                 ilGenerator.MarkLabelFor(endLable);
-                //}).
-                //Catch(il => ExcepionIntercept(il, interceptors, local)).EndException();
             }
             else
             {
@@ -270,8 +263,8 @@ namespace FS.Common
         }
 
         private static void ReturnIntercept(ILGenerator ilGenerator, IInterceptor[] interceptors,
-            LocalBuilder[] local /* interceptorsLocal,interceptedMethodLocal,interceptedTypeLocal */,
-            bool[] boolean /*hasValue,*/)
+            LocalBuilder[] local ,
+            bool[] boolean )
         {
             var returnValueInvocations = interceptors.GetReturnValueInterceptors();
             if (returnValueInvocations.Any())
@@ -292,8 +285,7 @@ namespace FS.Common
                 var interceptorLocal = ilGenerator.DeclareLocal(typeof(IReturnInterceptor[]));
                 var invocationLocal = ilGenerator.DeclareLocal(invocationType);
                 var parameterLocal = ilGenerator.DeclareLocal(parameterType);
-                //ilGenerator.Try(il =>
-                //{                
+                
                 ilGenerator.LoadLocal(local[0]).Call(get_ReturnInterceptorsMethod).StoreLocal(interceptorLocal);
                 ilGenerator.New(invocationType.GetConstructor(Type.EmptyTypes)).StoreLocal(invocationLocal);
                 ilGenerator.LoadLocal(invocationLocal).LoadLocal(local[1]).Callvirt(set_InterceptedMethod);
@@ -309,8 +301,7 @@ namespace FS.Common
                 ilGenerator.ForEach(returnValueInvocations, (_, invocation, index) => _
                         .LoadLocal(interceptorLocal).LoadArrayItem(index).LoadLocal(invocationLocal).Callvirt(on_Intercept));
                 ilGenerator.LoadLocal(parameterLocal).Callvirt(get_Value).StoreLocal(local[3]);
-                //}).
-                //Catch(il => ExcepionIntercept(il, interceptors, local)).EndException();
+
             }
         }
 
@@ -409,6 +400,26 @@ namespace FS.Common
             if (method.IsSpecialName)
                 attributes = attributes | MethodAttributes.SpecialName;
             return attributes;
+        }
+
+        private sealed class LoaclTable
+        {
+            private readonly Dictionary<string, LocalBuilder> _table = new Dictionary<string, LocalBuilder>();
+            public LocalBuilder this[string name]
+            {
+                get
+                {
+                    var local = default(LocalBuilder);
+                    _table.TryGetValue(name, out local);
+                    return local;
+                }
+            }
+
+            public LocalBuilder Add(string name, LocalBuilder builer)
+            {
+                _table.Add(name, builer);
+                return builer;
+            }
         }
     }
 }

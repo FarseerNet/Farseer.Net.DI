@@ -69,7 +69,6 @@
     <Compile Include="DynamicProxy\MethodInterceptorTest.cs" />
     <Compile Include="DynamicProxy\ParameterInterceptorTest.cs" />
     <Compile Include="DynamicProxy\ReturnInterceptorTest.cs" />
-    <Compile Include="Extensions\ClassExtensionTest.cs" />
     <Compile Include="Infrastructure\CustomInterceptor.cs" />
     <Compile Include="Infrastructure\IDependency.cs" />
     <Compile Include="Infrastructure\ILogger.cs" />

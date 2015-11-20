@@ -18,11 +18,14 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var properties = PropertyCacheManager.GetOrSetCache(context.DependencyEntry, () =>
-                context.Resolved.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).
+            var properties = PropertyCacheManager.GetOrSetCache(context.DependencyEntry,
+                () =>
+                context.Resolved.GetType().
+                GetProperties(BindingFlags.Public | BindingFlags.Instance).
                 Where(property => DependencyEntryCacheManager.GetCache((IScopedResolver)resolver).
-                Any(d => property.PropertyType == d.ServiceType) &&
+                Any(entry => property.PropertyType == entry.ServiceType) &&
                 !property.IsDefined(typeof(IgnoreDependencyAttribute), false)));
+
             foreach (var property in properties)
             {
                 try

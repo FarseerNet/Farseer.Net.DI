@@ -51,9 +51,6 @@
     <Compile Include="DynamicProxy\CustomInterceptorManager.cs" />
     <Compile Include="DynamicProxy\DynamicActivator.cs" />
     <Compile Include="DynamicProxy\DynamicAssembly.cs" />
-    <Compile Include="DynamicProxy\Extensions\DynamicExtension.cs" />
-    <Compile Include="DynamicProxy\Extensions\Extension.cs" />
-    <Compile Include="DynamicProxy\Extensions\ClassExtension.cs" />
     <Compile Include="DynamicProxy\InternalDynamicTypeProvider.cs" />
     <Compile Include="DynamicProxy\Invocations\IExceptionInvocation.cs" />
     <Compile Include="DynamicProxy\Invocations\IParameter.cs" />
@@ -66,7 +63,7 @@
     <Compile Include="_\FS.Cache\PropertyCacheManager.cs" />
     <Compile Include="_\FS.Cache\ScopedCacheManager.cs" />
     <Compile Include="_\FS.Cache\ScopedKeyCacheManager.cs" />
-    <Compile Include="_\FS.Common\DynamicHelper.cs" />
+    <Compile Include="DynamicProxy\DynamicHelper.cs" />
     <Compile Include="_\FS.Cache\DynamicTypeCacheManager.cs" />
     <Compile Include="_\FS.Extends\DependencyEntryExtends.cs" />
     <Compile Include="_\FS.Extends\ILGeneratorExtends.cs" />
@@ -84,7 +81,6 @@
     <Compile Include="FarseerContainer.cs" />
     <Compile Include="Core\IScopedResolverProvider.cs" />
     <Compile Include="IgnoreDependencyAttribute.cs" />
-    <Compile Include="DynamicProxyRegistrationExtensions.cs" />
     <Compile Include="DynamicProxy\Interceptors\ICustomInterceptor.cs" />
     <Compile Include="DynamicProxy\Interceptors\IReturnInterceptor.cs" />
     <Compile Include="DynamicProxy\Attributes\MethodInterceptorAttribute.cs" />

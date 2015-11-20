@@ -16,11 +16,10 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var args = context.HasPublicConstructor() ? context.DependencyEntry.GetImplementationType().
-                GetConstructorParameters(resolver) : new Object[] { };
-            var transient = CompileCacheManager.GetCache(context.DependencyEntry, resolver, args);
-            context.Resolved = transient;
-            context.Handled = transient != null && !PropertyCacheManager.Any(context.DependencyEntry);
+            var args = context.HasPublicConstructor() ? ResolverHelper.GetConstructorParameters
+                (context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
+            context.Resolved = CompileCacheManager.GetCache(context.DependencyEntry, resolver, args);
+            context.Handled = context.Resolved != null && !PropertyCacheManager.Any(context.DependencyEntry);
         }
     }
 }

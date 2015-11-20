@@ -19,13 +19,12 @@ namespace FS.DI.Resolve.CallSite
         {
             try
             {
-                var factory = CompileCacheManager.GetOrSetCache(context.DependencyEntry, () => CreateDelegate(context.Resolved as Expression));
-                var args = context.HasPublicConstructor() ? context.DependencyEntry.GetImplementationType().
-                    GetConstructorParameters(resolver) : new Object[] { };
-                var resolved = factory.Invoke(resolver, args);
-                context.Resolved = resolved;
+                var args = context.HasPublicConstructor() ? ResolverHelper.GetConstructorParameters(
+                    context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
+                context.Resolved = CompileCacheManager.GetOrSetCache(context.DependencyEntry,
+                    () => CreateDelegate(context.Resolved as Expression)).
+                    Invoke(resolver, args);
                 CacheResolved(context, resolver);
-                context.Handled = false;
             }
             catch (Exception ex)
             {
