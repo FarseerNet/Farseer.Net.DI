@@ -71,9 +71,7 @@ namespace FS.DI.DynamicProxy
         public static IExceptionInterceptor[] GetExcepionInterceptors(this IEnumerable<IInterceptor> interceptors)
             => interceptors.OfType<IExceptionInterceptor>().ToArray();
 
-        public static IReturnInterceptor[] GetReturnValueInterceptors(this IEnumerable<IInterceptor> interceptors)
-            => interceptors.OfType<IReturnInterceptor>().ToArray();
-
+    
         public static IParameterInterceptor[] GetParameterInterceptors(this IEnumerable<IInterceptor> interceptors)
             => interceptors.OfType<IParameterInterceptor>().Distinct(i => i.GetType()).ToArray();
 

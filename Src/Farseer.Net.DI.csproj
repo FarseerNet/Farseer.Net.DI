@@ -78,17 +78,14 @@
     <Compile Include="DynamicProxy\Invocations\IInvocation.cs" />
     <Compile Include="DynamicProxy\Invocations\IMethodInvocation.cs" />
     <Compile Include="DynamicProxy\Invocations\IParameterInvocation.cs" />
-    <Compile Include="DynamicProxy\Invocations\IReturnInvocation.cs" />
     <Compile Include="DynamicProxy\Attributes\ParameterInterceptorAttribute.cs" />
     <Compile Include="FarseerContainer.cs" />
     <Compile Include="Core\IScopedResolverProvider.cs" />
     <Compile Include="IgnoreDependencyAttribute.cs" />
     <Compile Include="DynamicProxy\Interceptors\ICustomInterceptor.cs" />
-    <Compile Include="DynamicProxy\Interceptors\IReturnInterceptor.cs" />
     <Compile Include="DynamicProxy\Attributes\MethodInterceptorAttribute.cs" />
     <Compile Include="DynamicProxy\Interceptors\IInterceptor.cs" />
     <Compile Include="DynamicProxy\Interceptors\IMethodInterceptor.cs" />
-    <Compile Include="DynamicProxy\Attributes\ReturnInterceptorAttribute.cs" />
     <Compile Include="Registration\Registrations\IDependencyRegistration.cs" />
     <Compile Include="Core\IDependencyRegister.cs" />
     <Compile Include="Core\IDependencyRegisterProvider.cs" />
