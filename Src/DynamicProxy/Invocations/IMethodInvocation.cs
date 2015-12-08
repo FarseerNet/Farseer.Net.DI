@@ -17,5 +17,15 @@ namespace FS.DI.DynamicProxy
         ///     值为true时将不执行后续方法拦截器和被拦截的方法，
         /// </summary>
         bool ExecutedHandled { get; set; }
+
+        /// <summary>
+        ///     返回值参数
+        /// </summary>
+        IReturnParameter ReturnParameter { get; }
+
+        /// <summary>
+        ///     方法参数
+        /// </summary>
+        IParameter[] Parameters { get; }
     }
 }

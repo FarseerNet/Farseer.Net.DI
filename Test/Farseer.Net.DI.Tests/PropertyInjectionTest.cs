@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using FS.DI.Tests.Infrastructure;
+﻿using FS.DI.Tests.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FS.DI.Tests

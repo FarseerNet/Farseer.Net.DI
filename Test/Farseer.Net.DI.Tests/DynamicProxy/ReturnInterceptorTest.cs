@@ -1,7 +1,6 @@
 ﻿using System;
 using FS.DI.DynamicProxy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 
 namespace FS.DI.Tests.DynamicProxy
 {
@@ -22,19 +21,23 @@ namespace FS.DI.Tests.DynamicProxy
 
     public class ReturnInterceptorTestClass
     {
-        [return:ReturnValidity]
+        [ReturnValidity]
         public virtual object Foo()
         {
             return null;
         }
     }
 
-    public class ReturnValidityAttribute : ReturnInterceptorAttribute
+    public class ReturnValidityAttribute : MethodInterceptorAttribute
     {
-        public override void OnReturnExecuted(IReturnInvocation invocation)
+        public override void OnMethodExecuted(IMethodInvocation invocation)
         {
-            if (invocation.Parameter.Value == null)
-                invocation.Parameter.Value = new ReturnInterceptorTestClass();
+            if (invocation.ReturnParameter.Value == null)
+                invocation.ReturnParameter.Value = new ReturnInterceptorTestClass();
+        }
+
+        public override void OnMethodExecuting(IMethodInvocation invocation)
+        {     
         }
     }
 }

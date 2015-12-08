@@ -1,5 +1,4 @@
 ﻿using FS.Cache;
-using FS.DI.Core;
 using FS.Extends;
 using System;
 using System.Linq;
@@ -12,66 +11,51 @@ namespace FS.DI.Resolve
         /// <summary>
         ///     是否解析完成
         /// </summary>
-        internal static bool NotResolved(this IResolverContext context)
-        {
-            return !context.Handled;
-        }
+        internal static bool NotResolved(this IResolverContext context) => !context.Handled;
 
         /// <summary>
         ///     是否Transient生命周期
         /// </summary>
         internal static bool IsTransientLifetime(this IResolverContext context)
-        {
-            return context.DependencyEntry.Lifetime == DependencyLifetime.Transient;
-        }
+            => context.Dependency.Lifetime == DependencyLifetime.Transient;
 
         /// <summary>
         ///     是否Singleton生命周期
         /// </summary>
         internal static bool IsSingletonLifetime(this IResolverContext context)
-        {
-            return context.DependencyEntry.Lifetime == DependencyLifetime.Singleton;
-        }
+            => context.Dependency.Lifetime == DependencyLifetime.Singleton;
 
         /// <summary>
         ///     是否Scoped生命周期
         /// </summary>
         internal static bool IsScopedLifetime(this IResolverContext context)
-        {
-            return context.DependencyEntry.Lifetime == DependencyLifetime.Scoped;
-        }
+            => context.Dependency.Lifetime == DependencyLifetime.Scoped;
 
         /// <summary>
         ///     ImplementationType是否有值
         /// </summary>
         internal static bool HasImplementationType(this IResolverContext context)
-        {
-            return context.DependencyEntry.ImplementationType != null;
-        }
+            => context.Dependency.ImplementationType != null;
 
         /// <summary>
         ///     ImplementationInstance是否有值
         /// </summary>
         internal static bool HasImplementationInstance(this IResolverContext context)
-        {
-            return context.DependencyEntry.ImplementationInstance != null;
-        }
+            => context.Dependency.ImplementationInstance != null;
 
         /// <summary>
         ///     ImplementationDelegate是否有值
         /// </summary>
         internal static bool HasImplementationDelegate(this IResolverContext context)
-        {
-            return context.DependencyEntry.ImplementationDelegate != null;
-        }
+            => context.Dependency.ImplementationDelegate != null;
 
         /// <summary>
         ///     是否含有公共的构造方法
         /// </summary>
         internal static bool HasPublicConstructor(this IResolverContext context)
-        {
-            return context.DependencyEntry.GetImplementationType().GetConstructors().Any(ctor => ctor.GetParameters().Length > 0);
-        }
+            => context.Dependency.GetImplementationType()
+                .GetConstructors()
+                .Any(ctor => ctor.GetParameters().Length > 0);
 
         /// <summary>
         ///     是否生成动态代理类型
@@ -79,30 +63,32 @@ namespace FS.DI.Resolve
         /// <param name="context"></param>
         /// <returns></returns>
         internal static bool IsDynamicProxy(this IResolverContext context)
-        {
-            return context.DependencyEntry.Style.HasFlag(DependencyStyle.DynamicProxy);
-        }
+            => context.Dependency.Style.HasFlag(DependencyStyle.DynamicProxy);
 
         /// <summary>
         ///     返回最佳构造方法
         /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         internal static ConstructorInfo GetBastConstructor(Type type, IDependencyResolver resolver)
         {
             var constructors = type.GetConstructors().OrderBy(ctor => ctor.GetParameters().Length).ToArray();
-            if (constructors.Length == 0)
+            switch (constructors.Length)
             {
-                throw new InvalidOperationException(type.FullName + "类没有公共的构造方法。");
-            }
-            else if (constructors.Length == 1)
-            {
-                return constructors[0];
-            }
-            else
-            {
-                ConstructorInfo bestConstructor = null;
-                foreach (var constructor in constructors)
-                {
-                    if (!constructor.GetParameterTypes().Any(t => DependencyEntryCacheManager.GetCache((IScopedResolver)resolver, t) == null))
+                case 0:
+                    throw new InvalidOperationException(type.FullName + "类没有公共的构造方法。");
+                case 1:
+                    return constructors[0];
+                default:
+                    ConstructorInfo bestConstructor = null;
+                    foreach (
+                        var constructor in
+                            constructors.Where(
+                                constructor =>
+                                    constructor.GetParameterTypes()
+                                        .All(
+                                            t =>
+                                                DependencyCacheManager.GetCache((IScopedResolver) resolver, t) !=
+                                                null)))
                     {
                         if (bestConstructor == null)
                         {
@@ -117,22 +103,20 @@ namespace FS.DI.Resolve
                             bestConstructor = constructor;
                         }
                     }
-                }
-                if (bestConstructor == null)
-                {
-                    throw new InvalidOperationException("类型\"" + type.FullName + "\"未找到合适的构造方法。");
-                }
-                return bestConstructor;
+                    if (bestConstructor == null)
+                    {
+                        throw new InvalidOperationException("类型\"" + type.FullName + "\"未找到合适的构造方法。");
+                    }
+                    return bestConstructor;
             }
             throw new InvalidOperationException("类型\"" + type.FullName + "\"未找到合适的构造方法。");
         }
 
-        internal static Object[] GetConstructorParameters(Type type, IDependencyResolver resolver)
-        {
-            return GetBastConstructor(type, resolver).
-                    GetParameters().
-                    Select(p => resolver.Resolve(p.ParameterType)).
-                    ToArray();
-        }
+        internal static object[] GetConstructorParameters(Type type, IDependencyResolver resolver)
+            =>
+                GetBastConstructor(type, resolver)
+                    .GetParameters()
+                    .Select(p => resolver.Resolve(p.ParameterType))
+                    .ToArray();
     }
 }

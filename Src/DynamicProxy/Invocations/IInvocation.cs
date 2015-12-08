@@ -15,6 +15,6 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///      被拦截的实例
         /// </summary>
-        Object InterceptedInstance { get; }
+        object InterceptedInstance { get; }
     }
 }

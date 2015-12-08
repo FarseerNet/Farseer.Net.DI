@@ -1,5 +1,4 @@
 ﻿using FS.Cache;
-using FS.DI.Core;
 
 namespace FS.DI.Resolve.CallSite
 {
@@ -15,7 +14,7 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var single = ScopedCacheManager.GetCache((IScopedResolver)resolver, context.DependencyEntry);
+            var single = ScopedCacheManager.GetCache((IScopedResolver) resolver, context.Dependency);
             context.Resolved = single;
             context.Handled = single != null;
         }

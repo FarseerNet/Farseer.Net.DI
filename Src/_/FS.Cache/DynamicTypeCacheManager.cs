@@ -1,6 +1,7 @@
 ﻿using FS.DI.DynamicProxy;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FS.Cache
 {
@@ -17,13 +18,14 @@ namespace FS.Cache
         /// <summary>
         ///     线程锁
         /// </summary>
-        private static readonly Object _sync = new Object();
+        private static readonly object Sync = new object();
+
         /// <summary>
         ///     缓存Key
         /// </summary>
         private readonly Type _key;
-    
-        public DynamicTypeCacheManager(Type key)
+
+        private DynamicTypeCacheManager(Type key)
         {
             _key = key;
         }
@@ -31,15 +33,12 @@ namespace FS.Cache
         /// <summary>
         ///     获取缓存值
         /// </summary>
-        public Type GetValue()
-        {
-            if (CacheList.ContainsKey(_key)) return CacheList[_key];
-            return SetCacheLock();
-        }
+        [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
+        private Type GetValue() => CacheList.ContainsKey(_key) ? CacheList[_key] : SetCacheLock();
 
         private Type SetCacheLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (CacheList.ContainsKey(_key)) return CacheList[_key];
 
@@ -50,6 +49,7 @@ namespace FS.Cache
         /// <summary>
         ///     获取缓存
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public static Type GetCache(Type key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));

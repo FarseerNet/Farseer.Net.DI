@@ -1,4 +1,4 @@
-﻿namespace FS.DI.Core
+﻿namespace FS.DI
 {
     /// <summary>
     ///     依赖服务解析器提供者

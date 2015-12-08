@@ -1,6 +1,5 @@
 ﻿using FS.Cache;
-using FS.DI.Core;
-using System;
+using FS.Extends;
 
 namespace FS.DI.Resolve.CallSite
 {
@@ -16,11 +15,14 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var args = context.HasImplementationType() && context.HasPublicConstructor() ?
-                ResolverHelper.GetConstructorParameters(
-                    context.DependencyEntry.GetImplementationType(), resolver) : new Object[] { };
-            context.Resolved = CompileCacheManager.GetCache(context.DependencyEntry, resolver, args);
-            context.Handled = context.Resolved != null && !PropertyCacheManager.Any(context.DependencyEntry);
+            var args = context.HasImplementationType() && context.HasPublicConstructor()
+                ? ResolverHelper.GetConstructorParameters(
+                    context.Dependency.GetImplementationType(), resolver)
+                : ArrayExtends.Empty<object>();
+
+            context.Resolved = CompileCacheManager.GetCache(context.Dependency, resolver, args);
+
+            context.Handled = context.Resolved != null && !PropertyCacheManager.Any(context.Dependency);
         }
     }
 }

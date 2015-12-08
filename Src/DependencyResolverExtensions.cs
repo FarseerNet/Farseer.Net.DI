@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     public static class DependencyResolverExtensions
     {
@@ -16,17 +16,18 @@ namespace FS.DI.Core
             where TService : class
         {
             if (dependencyResolver == null) throw new ArgumentNullException(nameof(dependencyResolver));
-            return (TService)dependencyResolver.Resolve(typeof(TService));
+            return dependencyResolver.Resolve(typeof (TService)) as TService;
         }
 
         /// <summary>
         ///     解析依赖服务集合
         /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public static IEnumerable<TService> ResolveAll<TService>(this IDependencyResolver dependencyResolver)
             where TService : class
         {
             if (dependencyResolver == null) throw new ArgumentNullException(nameof(dependencyResolver));
-            return dependencyResolver.ResolveAll(typeof(TService)).Select(t => (TService)t).Distinct(t => t.GetType());
+            return dependencyResolver.ResolveAll(typeof (TService)).Select(t => (TService) t).Distinct(t => t.GetType());
         }
 
         /// <summary>

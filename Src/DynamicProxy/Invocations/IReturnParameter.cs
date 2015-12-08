@@ -10,7 +10,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     返回值
         /// </summary>
-        Object Value { get; set; }
+        object Value { get; set; }
 
         /// <summary>
         ///     返回值类型

@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using FS.DI.Resolve;
+﻿using FS.DI.Resolve;
 using FS.DI.Tests.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -49,7 +48,7 @@ namespace FS.DI.Tests
         /// </summary>
         public bool Requires(IResolverContext context, IDependencyResolver resolver)
         {
-            return context.DependencyEntry.GetImplementationType().GetConstructors().Any();
+            return context.Dependency.GetImplementationType().GetConstructors().Any();
         }
         /// <summary>
         /// 解析类型
@@ -68,7 +67,7 @@ namespace FS.DI.Tests
         private ConstructorInfo FindConstructor(IResolverContext context)
         {
             ///返回实现类型参数最多的构造器
-            return context.DependencyEntry.GetImplementationType().  ///获取服务的实现类型
+            return context.Dependency.GetImplementationType().  ///获取服务的实现类型
                 GetConstructors().
                 OrderByDescending(
                 ctor => ctor.GetParameters().Length).

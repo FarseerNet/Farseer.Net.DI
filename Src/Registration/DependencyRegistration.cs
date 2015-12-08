@@ -1,17 +1,17 @@
-﻿using FS.DI.Core;
-
+﻿
 namespace FS.DI.Registration
 {
     /// <summary>
     ///     依赖服务注册
     /// </summary>
-    internal sealed class DependencyRegistration : IDependencyRegistration, ILifetimeRegistration, ISingletonRegistration
+    internal sealed class DependencyRegistration : IDependencyRegistration, ILifetimeRegistration,
+        ISingletonRegistration
     {
-        internal DependencyEntry Entry { get; set; }
+        internal Dependency Dependency { get; }
 
-        public DependencyRegistration(DependencyEntry entry)
+        public DependencyRegistration(Dependency dependency)
         {
-            Entry = entry;
+            Dependency = dependency;
         }
 
         #region IDependencyRegistration
@@ -21,7 +21,7 @@ namespace FS.DI.Registration
         /// </summary>
         public IDependencyRegistration AsTransientLifetime()
         {
-            Entry.Lifetime = DependencyLifetime.Transient;
+            Dependency.Lifetime = DependencyLifetime.Transient;
             return this;
         }
 
@@ -30,7 +30,7 @@ namespace FS.DI.Registration
         /// </summary>  
         public IDependencyRegistration AsScopedLifetime()
         {
-            Entry.Lifetime = DependencyLifetime.Scoped;
+            Dependency.Lifetime = DependencyLifetime.Scoped;
             return this;
         }
 
@@ -39,7 +39,7 @@ namespace FS.DI.Registration
         /// </summary>
         public IDependencyRegistration AsSingletonLifetime()
         {
-            Entry.Lifetime = DependencyLifetime.Singleton;
+            Dependency.Lifetime = DependencyLifetime.Singleton;
             return this;
         }
 
@@ -48,9 +48,9 @@ namespace FS.DI.Registration
         /// </summary>
         public IDependencyRegistration AsPropertyInjection()
         {
-            if (!Entry.Style.HasFlag(DependencyStyle.PropertyInjection))
+            if (!Dependency.Style.HasFlag(DependencyStyle.PropertyInjection))
             {
-                Entry.Style = Entry.Style | DependencyStyle.PropertyInjection;
+                Dependency.Style = Dependency.Style | DependencyStyle.PropertyInjection;
             }
             return this;
         }
@@ -60,9 +60,9 @@ namespace FS.DI.Registration
         /// </summary>
         public IDependencyRegistration AsDynamicProxy()
         {
-            if (!Entry.Style.HasFlag(DependencyStyle.DynamicProxy))
+            if (!Dependency.Style.HasFlag(DependencyStyle.DynamicProxy))
             {
-                Entry.Style = Entry.Style | DependencyStyle.DynamicProxy;   
+                Dependency.Style = Dependency.Style | DependencyStyle.DynamicProxy;
             }
             return this;
         }
@@ -75,33 +75,25 @@ namespace FS.DI.Registration
         ///        作为瞬态实例生命周期的依赖服务
         /// </summary>
         ILifetimeRegistration ITransientRegistration<ILifetimeRegistration>.AsTransientLifetime()
-        {
-            return (DependencyRegistration)AsTransientLifetime();
-        }
+            => (DependencyRegistration) AsTransientLifetime();
 
         /// <summary>
         ///     作为作用域生命周期的依赖服务
         /// </summary>  
         ILifetimeRegistration IScopedRegistration<ILifetimeRegistration>.AsScopedLifetime()
-        {
-            return (DependencyRegistration)AsScopedLifetime();
-        }
+            => (DependencyRegistration) AsScopedLifetime();
 
         /// <summary>
         ///     作为单例生命周期的依赖服务
         /// </summary>
         ILifetimeRegistration ISingletonRegistration<ILifetimeRegistration>.AsSingletonLifetime()
-        {
-            return (DependencyRegistration)AsSingletonLifetime();
-        }
+            => (DependencyRegistration) AsSingletonLifetime();
 
         /// <summary>
         ///     作为自动属性注入的依赖服务
         /// </summary>
         ILifetimeRegistration IPropertyRegistration<ILifetimeRegistration>.AsPropertyInjection()
-        {
-            return (DependencyRegistration)AsPropertyInjection();
-        }
+            => (DependencyRegistration) AsPropertyInjection();
 
         #endregion
 
@@ -111,17 +103,13 @@ namespace FS.DI.Registration
         ///     作为单例生命周期的依赖服务
         /// </summary>
         ISingletonRegistration ISingletonRegistration<ISingletonRegistration>.AsSingletonLifetime()
-        {
-            return (DependencyRegistration)AsSingletonLifetime();
-        }
+            => (DependencyRegistration) AsSingletonLifetime();
 
         /// <summary>
         ///     作为自动属性注入的依赖服务
         /// </summary>
         ISingletonRegistration IPropertyRegistration<ISingletonRegistration>.AsPropertyInjection()
-        {
-            return (DependencyRegistration)AsPropertyInjection();
-        }
+            => (DependencyRegistration) AsPropertyInjection();
 
         #endregion
     }

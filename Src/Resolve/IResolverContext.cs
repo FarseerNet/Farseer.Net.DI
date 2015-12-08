@@ -1,6 +1,4 @@
-﻿using FS.DI.Core;
-using System;
-
+﻿
 namespace FS.DI.Resolve
 {
     /// <summary>
@@ -11,17 +9,17 @@ namespace FS.DI.Resolve
         /// <summary>
         /// 是否完成
         /// </summary>
-        Boolean Handled { get; set; }
+        bool Handled { get; set; }
 
         /// <summary>
         /// 上下文对象
         /// </summary>
-        Object Resolved { get; set; }
+        object Resolved { get; set; }
 
         /// <summary>
-        /// DependencyEntry
+        /// Dependency
         /// </summary>
-        DependencyEntry DependencyEntry { get; }
+        Dependency Dependency { get; }
 
     }
 }

@@ -1,30 +1,34 @@
-﻿using FS.DI.Core;
+﻿
+using FS.DI;
 using FS.Extends;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FS.Cache
 {
     /// <summary>
     ///     作用域Key缓存管理
     /// </summary>
-    internal sealed class ScopedKeyCacheManager : AbsCacheManger<IScopedResolver, IEnumerable<Tuple<IScopedResolver, DependencyEntry>>>
+    internal sealed class ScopedKeyCacheManager :
+        AbsCacheManger<IScopedResolver, IEnumerable<Tuple<IScopedResolver, Dependency>>>
     {
         /// <summary>
         ///     线程锁
         /// </summary>
-        private static readonly Object _sync = new Object();
+        private static readonly object Sync = new object();
 
         private ScopedKeyCacheManager(IScopedResolver key)
             : base(key)
         {
         }
-        protected override IEnumerable<Tuple<IScopedResolver, DependencyEntry>> SetCacheLock()
+
+        protected override IEnumerable<Tuple<IScopedResolver, Dependency>> SetCacheLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (CacheList.ContainsKey(Key)) return CacheList[Key];
-                return CacheList[Key] = new List<Tuple<IScopedResolver, DependencyEntry>>();
+                return CacheList[Key] = new List<Tuple<IScopedResolver, Dependency>>();
             }
         }
 
@@ -33,7 +37,7 @@ namespace FS.Cache
         /// </summary>
         private void RemoveLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (CacheList.ContainsKey(Key)) CacheList.Remove(Key);
             }
@@ -42,22 +46,21 @@ namespace FS.Cache
         /// <summary>
         ///     设置缓存
         /// </summary>
-        public static void SetCache(IScopedResolver key, Tuple<IScopedResolver, DependencyEntry> scopedKey = null)
+        public static void SetCache(IScopedResolver key, Tuple<IScopedResolver, Dependency> scopedKey = null)
         {
             var collection = new ScopedKeyCacheManager(key).GetValue();
-            if (scopedKey != null)
+            if (scopedKey == null) return;
+            lock (Sync)
             {
-                lock(_sync)
-                {
-                    (collection as List<Tuple<IScopedResolver, DependencyEntry>>).Add(scopedKey);
-                }
-            }               
+                ((List<Tuple<IScopedResolver, Dependency>>) collection).Add(scopedKey);
+            }
         }
 
         /// <summary>
         ///     读取缓存
         /// </summary>
-        public static IEnumerable<Tuple<IScopedResolver, DependencyEntry>> GetCache(IScopedResolver key)
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+        public static IEnumerable<Tuple<IScopedResolver, Dependency>> GetCache(IScopedResolver key)
         {
             return new ScopedKeyCacheManager(key).GetValue();
         }
@@ -68,8 +71,8 @@ namespace FS.Cache
         /// </summary>
         public static void RemoveCache(IScopedResolver key)
         {
-            var keys = ScopedKeyCacheManager.GetCache(key);
-            keys.ForEach(k => ScopedCacheManager.RemoveCache(k));
+            var keys = GetCache(key);
+            keys.ForEach(ScopedCacheManager.RemoveCache);
             new ScopedKeyCacheManager(key).RemoveLock();
         }
     }

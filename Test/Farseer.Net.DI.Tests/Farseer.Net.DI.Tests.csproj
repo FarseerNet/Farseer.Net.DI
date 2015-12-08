@@ -86,6 +86,7 @@
     <Compile Include="RegisterTest.cs" />
     <Compile Include="RegisterAssemblyTest.cs" />
     <Compile Include="ResolverCallSiteTest.cs" />
+    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Farseer.Net.DI.csproj">
@@ -93,7 +94,6 @@
       <Name>Farseer.Net.DI</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using FS.DI.Tests.Infrastructure;
+﻿using FS.DI.Tests.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FS.DI.Tests
@@ -31,17 +30,16 @@ namespace FS.DI.Tests
 
         [TestMethod]
         public void RegisterInstance()
-        {
+        { 
             ///创建注册器
             IDependencyRegister register = container.CreateRegister();
             ///注册类型的实例
             UserRepository instance = new UserRepository();
-            register.RegisterInstance(typeof(IUserRepository),instance);
+            register.RegisterInstance(typeof(IUserRepository), instance);
             ///创建解析器
             using (IDependencyResolver resolver = container.CreateResolver())
             {
                 IUserRepository userRepository = resolver.Resolve<IUserRepository>();
-
                 Assert.IsNotNull(userRepository);
                 Assert.IsInstanceOfType(userRepository, typeof(IUserRepository));
             }

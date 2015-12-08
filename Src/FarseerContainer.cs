@@ -4,38 +4,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     /// <summary>
     ///     Farseer.IoC容器
     /// </summary>
-    public sealed class FarseerContainer : IFarseerContainer, IDependencyRegisterProvider, IDependencyResolverProvider
+    public sealed class FarseerContainer : IFarseerContainer
     {
-        private readonly Object _sync = new Object();
+        private readonly object _sync = new object();
 
-        private readonly IDictionary<Type, DependencyEntry> _dependencyDictionary;
+        private readonly IDictionary<Type, Dependency> _dependencyDictionary;
 
         private IDependencyRegisterProvider _dependencyRegisterProvider;
-        private IDependencyResolverProvider _dependencyResolverProvider;
+        private readonly IDependencyResolverProvider _dependencyResolverProvider;
 
         public FarseerContainer()
             : this(null)
-        { }
+        {
+        }
 
         /// <summary>
         ///     初始化IoC容器
         /// </summary>
-        /// <param name="dependencyEntrys"></param>
-        public FarseerContainer(IEnumerable<DependencyEntry> dependencyEntrys)
+        /// <param name="dependencys"></param>
+        // ReSharper disable once MemberCanBePrivate.Global
+        public FarseerContainer(IEnumerable<Dependency> dependencys)
         {
-            _dependencyDictionary = new ConcurrentDictionary<Type, DependencyEntry>();
-            if (dependencyEntrys != null)
-            {
-                foreach (var entry in dependencyEntrys)
-                {
-                    Add(entry);
-                }
-            }
+            _dependencyDictionary = new ConcurrentDictionary<Type, Dependency>();
+            if (dependencys != null)
+                foreach (var dependency in dependencys)
+                    Add(dependency);
             _dependencyRegisterProvider = this;
             _dependencyResolverProvider = this;
         }
@@ -43,31 +41,26 @@ namespace FS.DI.Core
         /// <summary>
         ///     获取容器中包含的依赖服务元素数
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _dependencyDictionary.Count;
-            }
-        }
+        public int Count => _dependencyDictionary.Count;
 
         /// <summary>
         ///     添加依赖服务对象到容器中
         /// </summary>
-        /// <param name="dependencyEntry">依赖服务对象</param>
-        public void Add(DependencyEntry dependencyEntry)
+        /// <param name="dependency">依赖服务对象</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void Add(Dependency dependency)
         {
-            if (dependencyEntry == null) throw new ArgumentNullException(nameof(dependencyEntry));
+            if (dependency == null) throw new ArgumentNullException(nameof(dependency));
             lock (_sync)
             {
-                var serviceType = dependencyEntry.ServiceType;
+                var serviceType = dependency.ServiceType;
                 if (_dependencyDictionary.ContainsKey(serviceType))
                 {
-                    _dependencyDictionary[serviceType].Add(dependencyEntry);
+                    _dependencyDictionary[serviceType].Add(dependency);
                 }
                 else
                 {
-                    _dependencyDictionary.Add(serviceType, dependencyEntry);
+                    _dependencyDictionary.Add(serviceType, dependency);
                 }
             }
         }
@@ -79,15 +72,15 @@ namespace FS.DI.Core
         {
             lock (_sync)
             {
-                var dependencyEntrys = _dependencyDictionary.Select(entry => entry.Value);
-                return new FarseerContainer(dependencyEntrys);
+                var dependencys = _dependencyDictionary.Select(dependency => dependency.Value);
+                return new FarseerContainer(dependencys);
             }
         }
 
         /// <summary>
         /// 返回一个循环访问容器的枚举器
         /// </summary>
-        public IEnumerator<DependencyEntry> GetEnumerator()
+        public IEnumerator<Dependency> GetEnumerator()
         {
             return _dependencyDictionary.Values.GetEnumerator();
         }
@@ -97,7 +90,10 @@ namespace FS.DI.Core
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _dependencyDictionary.GetEnumerator();
+            lock (_sync)
+            {
+                return _dependencyDictionary.GetEnumerator();
+            }
         }
 
         /// <summary>
@@ -138,26 +134,21 @@ namespace FS.DI.Core
         /// <summary>
         ///     设置依赖服务注册器提供者
         /// </summary>
-        /// <param name="registerProvider">依赖服务注册器提供者</param>
+        /// <param name="dependencyRegisterProvider">依赖服务注册器提供者</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void SetRegisterProvider(IDependencyRegisterProvider dependencyRegisterProvider)
         {
             if (dependencyRegisterProvider == null) throw new ArgumentNullException(nameof(dependencyRegisterProvider));
             _dependencyRegisterProvider = dependencyRegisterProvider;
         }
-     
+
         public void Dispose()
         {
-            foreach (var entry in _dependencyDictionary.Values)
+            foreach (var dependency in _dependencyDictionary.Values)
             {
-                if (entry.ImplementationInstance != null)
-                {
-                    var disposable = entry.ImplementationInstance as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
-                }
-                Cache.CompileCacheManager.RemoveCache(entry);
+                var disposable = dependency.ImplementationInstance as IDisposable;
+                disposable?.Dispose();
+                Cache.CompileCacheManager.RemoveCache(dependency);
             }
             this.Clear();
         }

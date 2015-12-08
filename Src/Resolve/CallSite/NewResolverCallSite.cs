@@ -1,5 +1,4 @@
 ﻿using FS.Cache;
-using FS.DI.Core;
 using System;
 using System.Linq.Expressions;
 
@@ -12,17 +11,18 @@ namespace FS.DI.Resolve.CallSite
     {
         public bool Requires(IResolverContext context, IDependencyResolver resolver)
         {
-            return context.NotResolved() && context.Resolved == null && context.HasImplementationType() && !context.HasPublicConstructor();
+            return context.NotResolved() && context.Resolved == null && context.HasImplementationType() &&
+                   !context.HasPublicConstructor();
         }
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            context.Resolved = Expression.Lambda<Func<IDependencyResolver, Object[], Object>>(
-                Expression.New(context.IsDynamicProxy() ?
-                DynamicTypeCacheManager.GetCache(context.DependencyEntry.ImplementationType) :
-                context.DependencyEntry.ImplementationType),
-                Expression.Parameter(typeof(IDependencyResolver)),
-                Expression.Parameter(typeof(Object[])));
+            context.Resolved = Expression.Lambda<Func<IDependencyResolver, object[], object>>(
+                    Expression.New(context.IsDynamicProxy()
+                    ? DynamicTypeCacheManager.GetCache(context.Dependency.ImplementationType)
+                    : context.Dependency.ImplementationType),
+                    Expression.Parameter(typeof (IDependencyResolver)),
+                    Expression.Parameter(typeof (object[])));
         }
     }
 }

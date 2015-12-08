@@ -13,7 +13,7 @@ namespace FS.DI.Registration
         /// <summary>
         ///     依赖服务注册集合
         /// </summary>
-        private ICollection<IDependencyRegistration> _configurationCollection;
+        private readonly ICollection<IDependencyRegistration> _configurationCollection;
 
         public EnumerableRegistration(IEnumerable<IDependencyRegistration> configurationCollection)
         {
@@ -24,6 +24,7 @@ namespace FS.DI.Registration
         /// <summary>
         ///     作为动态代理实现的依赖服务
         /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
         public IEnumerableRegistration AsDynamicProxy()
         {
             foreach (var configuration in _configurationCollection)
@@ -39,6 +40,7 @@ namespace FS.DI.Registration
         /// <summary>
         ///     作为自动属性注入的依赖服务
         /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
         public IEnumerableRegistration AsPropertyInjection()
         {
             foreach (var configuration in _configurationCollection)
@@ -53,10 +55,11 @@ namespace FS.DI.Registration
 
         /// <summary>
         ///     作为作用域生命周期的依赖服务
-        /// </summary>  
+        /// </summary>
+        /// <exception cref="NullReferenceException"></exception>  
         public IEnumerableRegistration AsScopedLifetime()
         {
-            foreach(var configuration in _configurationCollection)
+            foreach (var configuration in _configurationCollection)
             {
                 if (configuration == null)
                     throw new NullReferenceException("IDependencyConfiguration不能为null");
@@ -69,6 +72,7 @@ namespace FS.DI.Registration
         /// <summary>
         ///     作为单例生命周期的依赖服务
         /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
         public IEnumerableRegistration AsSingletonLifetime()
         {
             foreach (var configuration in _configurationCollection)
@@ -84,6 +88,7 @@ namespace FS.DI.Registration
         /// <summary>
         ///        作为瞬态实例生命周期的依赖服务
         /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
         public IEnumerableRegistration AsTransientLifetime()
         {
             foreach (var configuration in _configurationCollection)
@@ -97,13 +102,8 @@ namespace FS.DI.Registration
         }
 
         public IEnumerator<IDependencyRegistration> GetEnumerator()
-        {
-            return _configurationCollection.AsEnumerable().GetEnumerator();
-        }
+            => _configurationCollection.AsEnumerable().GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

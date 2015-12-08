@@ -1,4 +1,4 @@
-﻿namespace FS.DI.Core
+﻿namespace FS.DI
 {
     /// <summary>
     ///     依赖服务注册器
@@ -8,6 +8,6 @@
         /// <summary>
         ///     注册依赖服务对象
         /// </summary>
-        void RegisterEntry(DependencyEntry dependencyEntry);
+        void RegisterDependency(Dependency dependency);
     }
 }

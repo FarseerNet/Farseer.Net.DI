@@ -1,5 +1,4 @@
 ﻿using FS.Cache;
-using FS.DI.Core;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -18,13 +17,13 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            var properties = PropertyCacheManager.GetOrSetCache(context.DependencyEntry,
+            var properties = PropertyCacheManager.GetOrSetCache(context.Dependency,
                 () =>
-                context.Resolved.GetType().
-                GetProperties(BindingFlags.Public | BindingFlags.Instance).
-                Where(property => DependencyEntryCacheManager.GetCache((IScopedResolver)resolver).
-                Any(entry => property.PropertyType == entry.ServiceType) &&
-                !property.IsDefined(typeof(IgnoreDependencyAttribute), false)));
+                    context.Resolved.GetType().
+                        GetProperties(BindingFlags.Public | BindingFlags.Instance).
+                        Where(property => DependencyCacheManager.GetCache((IScopedResolver) resolver).
+                            Any(dependency => property.PropertyType == dependency.ServiceType) &&
+                                          !property.IsDefined(typeof (IgnoreDependencyAttribute), false)));
 
             foreach (var property in properties)
             {
@@ -34,8 +33,9 @@ namespace FS.DI.Resolve.CallSite
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException(String.Format("类型\"{0}\"未能注入属性\"{1}\"的实例。",
-                        context.DependencyEntry.GetImplementationType(), property.PropertyType), ex);
+                    throw new InvalidOperationException(
+                        $"类型\"{context.Dependency.GetImplementationType()}\"未能注入属性\"{property.PropertyType}\"的实例。",
+                        ex);
                 }
             }
             context.Handled = true;

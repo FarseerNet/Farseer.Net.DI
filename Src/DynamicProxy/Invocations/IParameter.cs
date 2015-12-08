@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace FS.DI.DynamicProxy
 {
@@ -11,7 +10,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     参数值
         /// </summary>
-        Object Value { get; set; }
+        object Value { get; set; }
         /// <summary>
         ///     参数名称
         /// </summary>

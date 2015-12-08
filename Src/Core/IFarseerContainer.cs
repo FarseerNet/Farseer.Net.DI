@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     /// <summary>
     ///     Farseer.IoC容器
     /// </summary>
-    public interface IFarseerContainer : IEnumerable<DependencyEntry>, IDependencyRegisterProvider, IDependencyResolverProvider, IEnumerable, IDisposable
+    public interface IFarseerContainer : IEnumerable<Dependency>, IDependencyRegisterProvider, IDependencyResolverProvider, IEnumerable, IDisposable
     {
         /// <summary>
         ///     获取容器中包含的依赖服务元素数
@@ -17,8 +17,8 @@ namespace FS.DI.Core
         /// <summary>
         ///     添加依赖服务对象到容器中
         /// </summary>
-        /// <param name="dependencyEntry">依赖服务对象</param>
-        void Add(DependencyEntry dependencyEntry);
+        /// <param name="dependency">依赖服务对象</param>
+        void Add(Dependency dependency);
 
         /// <summary>
         ///     深拷贝容器

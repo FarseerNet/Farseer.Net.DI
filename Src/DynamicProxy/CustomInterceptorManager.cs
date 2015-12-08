@@ -3,8 +3,14 @@ using System;
 
 namespace FS.DI.DynamicProxy
 {
-    public sealed class CustomInterceptorManager
+    public static class CustomInterceptorManager
     {
+        /// <summary>
+        ///     配置自定义拦截器
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="interceptors"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public static void Configure(Type type, params ICustomInterceptor[] interceptors)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -12,6 +18,10 @@ namespace FS.DI.DynamicProxy
             CustomInterceptorCacheManager.SetCache(type, interceptors);
         }
 
+        /// <summary>
+        ///     卸载配置
+        /// </summary>
+        /// <param name="type"></param>
         public static void UnConfigure(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));

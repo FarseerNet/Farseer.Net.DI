@@ -1,8 +1,7 @@
-﻿using FS.DI.Resolve;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     /// <summary>
     ///     依赖服务解析器
@@ -13,11 +12,11 @@ namespace FS.DI.Core
         /// <summary>
         ///     解析依赖服务
         /// </summary>
-        Object Resolve(Type serviceType);
+        object Resolve(Type serviceType);
 
         /// <summary>
         ///     解析依赖服务
         /// </summary>
-        IEnumerable<Object> ResolveAll(Type serviceType);
+        IEnumerable<object> ResolveAll(Type serviceType);
     } 
 }

@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using FS.DI.Tests.Infrastructure;
+﻿using FS.DI.Tests.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 
@@ -19,8 +18,7 @@ namespace FS.DI.Tests
             ///创建注册器
             IDependencyRegister register = container.CreateRegister();
             ///注册实现特定接口或基类的类型
-            register.RegisterAssembly<IDependency>(Assembly.GetExecutingAssembly());
-            ///创建解析器
+            var assembly = register.RegisterAssembly<IDependency>(Assembly.GetExecutingAssembly());
             using (IDependencyResolver resolver = container.CreateResolver())
             {
                 var results = resolver.ResolveAll<IDependency>();
@@ -38,7 +36,7 @@ namespace FS.DI.Tests
             ///创建注册器
             IDependencyRegister register = container.CreateRegister();
             ///注册程序集中符合约定名称的类型
-            register.RegisterAssembly(Assembly.GetExecutingAssembly(), "Repository");
+            register.RegisterAssembly("Repository", Assembly.GetExecutingAssembly());
             ///创建解析器
             using (IDependencyResolver resolver = container.CreateResolver())
             {
@@ -57,11 +55,11 @@ namespace FS.DI.Tests
             ///创建注册器
             IDependencyRegister register = container.CreateRegister();
             ///注册实现特定泛型类型定义IRepository<>的类型
-            register.RegisterAssembly(Assembly.GetExecutingAssembly(), typeof(IRepository<>));
+            register.RegisterAssembly(typeof(IRepository<>), Assembly.GetExecutingAssembly());
             ///创建解析器
             using (IDependencyResolver resolver = container.CreateResolver())
             {
-             
+
                 ///解析实现特定泛型类型定义IRepository<>的类型
                 var results = resolver.ResolveAll(typeof(IRepository<>));
                 foreach (var value in results)

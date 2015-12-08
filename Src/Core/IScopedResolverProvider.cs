@@ -1,4 +1,4 @@
-﻿namespace FS.DI.Core
+﻿namespace FS.DI
 {
     /// <summary>
     ///     作用域服务解析器提供者

@@ -1,4 +1,4 @@
-﻿namespace FS.DI.Core
+﻿namespace FS.DI
 {
     /// <summary>
     ///     依赖服务生命周期

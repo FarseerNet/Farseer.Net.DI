@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using System;
+﻿
 
 namespace FS.DI.Resolve
 {
@@ -15,6 +14,7 @@ namespace FS.DI.Resolve
         /// <param name="resolver"></param>
         /// <returns></returns>
         bool Requires(IResolverContext context, IDependencyResolver resolver);
+
         /// <summary>
         /// 通过上下文调用解析器
         /// </summary>

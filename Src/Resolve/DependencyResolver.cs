@@ -1,5 +1,4 @@
 ﻿using FS.Cache;
-using FS.DI.Core;
 using FS.DI.Resolve.CallSite;
 using FS.Extends;
 using System;
@@ -13,25 +12,25 @@ namespace FS.DI.Resolve
     /// </summary>
     internal sealed class DependencyResolver : IDependencyResolver, IScopedResolver
     {
-        internal IScopedResolver RootScoped { get; private set; }
+        internal IScopedResolver RootScoped { get; }
 
-        public DependencyResolver(IEnumerable<DependencyEntry> dependencyEntries)
+        public DependencyResolver(IEnumerable<Dependency> dependencyEntries)
         {
             RootScoped = this;
-            DependencyEntryCacheManager.SetCache(this, dependencyEntries);
+            DependencyCacheManager.SetCache(this, dependencyEntries);
             InitializationCallSite();
         }
 
-        public DependencyResolver(IScopedResolver root, IEnumerable<DependencyEntry> dependencyEntries)
+        private DependencyResolver(IScopedResolver root, IEnumerable<Dependency> dependencyEntries)
         {
             RootScoped = root;
-            DependencyEntryCacheManager.SetCache(this, dependencyEntries);
+            DependencyCacheManager.SetCache(this, dependencyEntries);
             InitializationCallSite();
         }
 
         private void InitializationCallSite()
         {
-            CallSiteCacheManager.SetCache(this, new IResolverCallSite[] {
+            CallSiteCacheManager.SetCache(this,
                 new PropertyResolverCallSite(),
                 new CompileResolverCallSite(),
                 new ConstructorResolverCallSite(),
@@ -40,65 +39,62 @@ namespace FS.DI.Resolve
                 new DelegateResolverCallSite(),
                 new ScopedResolverCallSite(),
                 new SingletonResolverCallSite(),
-                new TransientResolverCallSite()
-            });
+                new TransientResolverCallSite());
         }
 
         public void Dispose()
         {
             ScopedKeyCacheManager.RemoveCache(this);
-            DependencyEntryCacheManager.RemoveCache(this);
+            DependencyCacheManager.RemoveCache(this);
             CallSiteCacheManager.RemoveCache(this);
         }
 
         /// <summary>
         /// 解析服务
         /// </summary>
-        public Object Resolve(Type serviceType)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public object Resolve(Type serviceType)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
-            DependencyEntry entry = DependencyEntryCacheManager.GetCache(this, serviceType);
-            if (entry == null)
+            var dependency = DependencyCacheManager.GetCache(this, serviceType);
+            if (dependency == null)
             {
-                throw new InvalidOperationException(string.Format("尝试解析未注册的类型\"{0}\"失败。", serviceType.FullName));
+                throw new InvalidOperationException($"尝试解析未注册的类型\"{serviceType.FullName}\"失败。");
             }
-            return BuildUp(new ResolverContext(entry.Last));
+            return BuildUp(new ResolverContext(dependency.Last));
         }
 
-        Object IServiceProvider.GetService(Type serviceType)
-        {
-            return Resolve(serviceType);
-        }
+        object IServiceProvider.GetService(Type serviceType) => Resolve(serviceType);
 
         /// <summary>
         ///     创建作用域解析器
         /// </summary>
         /// <returns></returns>
         public IScopedResolver CreateScopedResolver()
-        {
-            return new DependencyResolver(RootScoped, DependencyEntryCacheManager.GetCache(this));
-        }
+            => new DependencyResolver(RootScoped, DependencyCacheManager.GetCache(this));
 
         /// <summary>
         ///     解析服务集合
         /// </summary>
-        public IEnumerable<Object> ResolveAll(Type serviceType)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public IEnumerable<object> ResolveAll(Type serviceType)
         {
             if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
             if (serviceType.IsGenericTypeDefinition)
             {
-                var serviceTypes = DependencyEntryCacheManager.GetCache(this).
+                var serviceTypes = DependencyCacheManager.GetCache(this).
                     Where(e => e.ServiceType.GetGenericTypeDefinitions().
-                    Any(genericType => genericType == serviceType)).
+                        Any(genericType => genericType == serviceType)).
                     Select(e => e.ServiceType).ToArray();
-                foreach (var type in serviceTypes)
+                foreach (var dependency in serviceTypes.Select(type => DependencyCacheManager.GetCache(this, type)))
                 {
-                    DependencyEntry entry = DependencyEntryCacheManager.GetCache(this, type);
-                    if (entry == null)
+                    if (dependency == null)
                     {
-                        throw new InvalidOperationException(string.Format("尝试解析未注册的类型\"{0}\"失败。", serviceType.FullName));
+                        throw new InvalidOperationException($"尝试解析未注册的类型\"{serviceType.FullName}\"失败。");
                     }
-                    foreach (var e in entry.Chain())
+                    foreach (var e in dependency.Chain())
                     {
                         yield return BuildUp(new ResolverContext(e));
                     }
@@ -106,12 +102,12 @@ namespace FS.DI.Resolve
             }
             else
             {
-                DependencyEntry entry = DependencyEntryCacheManager.GetCache(this, serviceType);
-                if (entry == null)
+                var dependency = DependencyCacheManager.GetCache(this, serviceType);
+                if (dependency == null)
                 {
-                    throw new InvalidOperationException(string.Format("尝试解析未注册的类型\"{0}\"失败。", serviceType.FullName));
+                    throw new InvalidOperationException($"尝试解析未注册的类型\"{serviceType.FullName}\"失败。");
                 }
-                foreach (var e in entry.Chain())
+                foreach (var e in dependency.Chain())
                 {
                     yield return BuildUp(new ResolverContext(e));
                 }
@@ -119,10 +115,11 @@ namespace FS.DI.Resolve
         }
 
 
-        private Object BuildUp(IResolverContext context)
+        private object BuildUp(IResolverContext context)
         {
             var callSiteCollection = CallSiteCacheManager.GetCache(this).ToArray();
-            for (int i = callSiteCollection.Length - 1; i >= 0; i--)
+            var i = callSiteCollection.Length - 1;
+            for (; i >= 0; i--)
             {
                 var callSite = callSiteCollection[i];
 

@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     [Flags]
-    public enum DependencyStyle
+    internal enum DependencyStyle
     {
         /// <summary>
         ///     默认类型

@@ -1,6 +1,4 @@
-﻿using FS.DI.Core;
-
-namespace FS.DI.Tests.Infrastructure
+﻿namespace FS.DI.Tests.Infrastructure
 {
     public class UserService : IUserService
     {

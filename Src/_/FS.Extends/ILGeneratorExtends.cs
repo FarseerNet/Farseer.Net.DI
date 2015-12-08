@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 using FS.Extends;
@@ -12,6 +11,7 @@ namespace FS.DI.DynamicProxy
     /// <summary>
     ///     一个代码很乱的类，请忽略。
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     internal static class ILGeneratorExtends
     {
         /// <summary>
@@ -70,7 +70,7 @@ namespace FS.DI.DynamicProxy
                     break;
                 default:
                     if (index > -129 && index < 128)
-                        ilGenerator.Emit(OpCodes.Ldarg_S, (sbyte)index);
+                        ilGenerator.Emit(OpCodes.Ldarg_S, (sbyte) index);
                     else
                         ilGenerator.Emit(OpCodes.Ldarg, index);
                     break;
@@ -78,8 +78,17 @@ namespace FS.DI.DynamicProxy
             return ilGenerator;
         }
 
-        private static MethodInfo _getTypeMethod = typeof(object).GetMethod("GetType");
-        private static MethodInfo _getBaseTypeMethod = typeof(Type).GetMethod("get_BaseType");
+        internal static ILGenerator StroeArgument(this ILGenerator ilGenerator, int index)
+        {
+            if (index > -129 && index < 128)
+                ilGenerator.Emit(OpCodes.Starg_S, (sbyte)index);
+            else
+                ilGenerator.Emit(OpCodes.Starg, index);
+            return ilGenerator;
+        }
+
+        private static readonly MethodInfo GetTypeMethod = typeof (object).GetMethod("GetType");
+        private static readonly MethodInfo GetBaseTypeMethod = typeof (Type).GetMethod("get_BaseType");
 
         /// <summary>
         ///     获取Type
@@ -87,7 +96,7 @@ namespace FS.DI.DynamicProxy
         internal static ILGenerator GetThisType(this ILGenerator ilGenerator)
         {
             ilGenerator.This();
-            ilGenerator.Call(_getTypeMethod);
+            ilGenerator.Callvirt(GetTypeMethod);
             return ilGenerator;
         }
 
@@ -97,19 +106,22 @@ namespace FS.DI.DynamicProxy
         internal static ILGenerator GetBaseType(this ILGenerator ilGenerator)
         {
             ilGenerator.GetThisType();
-            ilGenerator.Callvirt(_getBaseTypeMethod);
+            ilGenerator.Callvirt(GetBaseTypeMethod);
             return ilGenerator;
         }
 
-        private static MethodInfo _stackFrameMethod = typeof(StackFrame).GetMethod("GetMethod");
-        private static ConstructorInfo _stackFrameConstructor = typeof(StackFrame).GetConstructors().Where(ctor => ctor.GetParameters().Length == 0).Single();
+        private static readonly MethodInfo StackFrameMethod = typeof (StackFrame).GetMethod("GetMethod");
+
+        private static readonly ConstructorInfo StackFrameConstructor =
+            typeof (StackFrame).GetConstructors().Single(ctor => ctor.GetParameters().Length == 0);
+
         /// <summary>
         ///     获取当前调用的方法
         /// </summary>
         internal static ILGenerator GetStackFrameMethod(this ILGenerator ilGenerator)
         {
-            ilGenerator.Emit(OpCodes.Newobj, _stackFrameConstructor);
-            ilGenerator.EmitCall(OpCodes.Callvirt, _stackFrameMethod, null);
+            ilGenerator.Emit(OpCodes.Newobj, StackFrameConstructor);
+            ilGenerator.EmitCall(OpCodes.Callvirt, StackFrameMethod, null);
             return ilGenerator;
         }
 
@@ -144,7 +156,7 @@ namespace FS.DI.DynamicProxy
                     break;
                 default:
                     if (index <= 0xff)
-                        ilGenerator.Emit(OpCodes.Stloc_S, (sbyte)index);
+                        ilGenerator.Emit(OpCodes.Stloc_S, (sbyte) index);
                     else
                         ilGenerator.Emit(OpCodes.Stloc, index);
                     break;
@@ -173,7 +185,7 @@ namespace FS.DI.DynamicProxy
                     break;
                 default:
                     if (index <= 0xff)
-                        ilGenerator.Emit(OpCodes.Ldloc_S, (sbyte)index);
+                        ilGenerator.Emit(OpCodes.Ldloc_S, (sbyte) index);
                     else
                         ilGenerator.Emit(OpCodes.Ldloc, index);
                     break;
@@ -211,7 +223,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     加载int值
         /// </summary>
-        public static ILGenerator LoadInt(this ILGenerator ilGenerator, int value)
+        internal static ILGenerator LoadInt(this ILGenerator ilGenerator, int value)
         {
             switch (value)
             {
@@ -247,7 +259,7 @@ namespace FS.DI.DynamicProxy
                     break;
                 default:
                     if (value > -129 && value < 128)
-                        ilGenerator.Emit(OpCodes.Ldc_I4_S, (sbyte)value);
+                        ilGenerator.Emit(OpCodes.Ldc_I4_S, (sbyte) value);
                     else
                         ilGenerator.Emit(OpCodes.Ldc_I4, value);
                     break;
@@ -259,7 +271,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     加载字符串
         /// </summary>
-        public static ILGenerator LoadString(this ILGenerator ilGenerator, string value)
+        internal static ILGenerator LoadString(this ILGenerator ilGenerator, string value)
         {
             if (value == null)
             {
@@ -273,7 +285,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     加载null值
         /// </summary>
-        public static ILGenerator LoadNull(this ILGenerator ilGenerator)
+        internal static ILGenerator LoadNull(this ILGenerator ilGenerator)
         {
             ilGenerator.Emit(OpCodes.Ldnull);
             return ilGenerator;
@@ -282,7 +294,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     try代码块
         /// </summary>
-        public static ILGenerator Try(this ILGenerator ilGenerator, Action<ILGenerator> @try)
+        internal static ILGenerator Try(this ILGenerator ilGenerator, Action<ILGenerator> @try)
         {
             ilGenerator.BeginExceptionBlock();
             @try(ilGenerator);
@@ -292,7 +304,7 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     cache代码块
         /// </summary>
-        public static ILGenerator Catch(this ILGenerator ilGenerator, Type exceptionType, Action<ILGenerator> @catch)
+        internal static ILGenerator Catch(this ILGenerator ilGenerator, Type exceptionType, Action<ILGenerator> @catch)
         {
             ilGenerator.BeginCatchBlock(exceptionType);
             @catch(ilGenerator);
@@ -302,24 +314,24 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     cache代码块
         /// </summary>
-        public static ILGenerator Catch<TException>(this ILGenerator ilGenerator, Action<ILGenerator> @catch)
+        internal static ILGenerator Catch<TException>(this ILGenerator ilGenerator, Action<ILGenerator> @catch)
             where TException : Exception
         {
-            return ilGenerator.Catch(typeof(TException), @catch);
+            return ilGenerator.Catch(typeof (TException), @catch);
         }
 
         /// <summary>
         ///     cache代码块 默认处理 Exception
         /// </summary>
-        public static ILGenerator Catch(this ILGenerator ilGenerator, Action<ILGenerator> @catch)
+        internal static ILGenerator Catch(this ILGenerator ilGenerator, Action<ILGenerator> @catch)
         {
-            return ilGenerator.Catch(typeof(Exception), @catch);
+            return ilGenerator.Catch(typeof (Exception), @catch);
         }
 
         /// <summary>
         ///     结束异常处理
         /// </summary>
-        public static ILGenerator EndException(this ILGenerator ilGenerator)
+        internal static ILGenerator EndException(this ILGenerator ilGenerator)
         {
             ilGenerator.EndExceptionBlock();
             return ilGenerator;
@@ -349,7 +361,7 @@ namespace FS.DI.DynamicProxy
         internal static ILGenerator CallBase(this ILGenerator ilGenerator, MethodInfo method)
         {
             var parameters = method.GetParameterTypes().ToArray();
-            for (int i = 0; i <= parameters.Length; i++)
+            for (var i = 0; i <= parameters.Length; i++)
                 ilGenerator.LoadArgument(i);
             ilGenerator.Call(method);
             return ilGenerator;
@@ -358,7 +370,8 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     for循环调用
         /// </summary>
-        internal static ILGenerator ForEach<TSource>(this ILGenerator ilGenerator, IEnumerable<TSource> source, Action<ILGenerator, TSource, int> action)
+        internal static ILGenerator ForEach<TSource>(this ILGenerator ilGenerator, IEnumerable<TSource> source,
+            Action<ILGenerator, TSource, int> action)
         {
             source.ForEach((item, index) => action(ilGenerator, item, index));
             return ilGenerator;
@@ -435,11 +448,12 @@ namespace FS.DI.DynamicProxy
             return ilGenerator;
         }
 
-        private static MethodInfo _getTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle");
+        private static readonly MethodInfo GetTypeFromHandle = typeof (Type).GetMethod("GetTypeFromHandle");
+
         internal static ILGenerator Typeof(this ILGenerator ilGenerator, Type type)
         {
             ilGenerator.Emit(OpCodes.Ldtoken, type);
-            ilGenerator.Call(_getTypeFromHandle);
+            ilGenerator.Call(GetTypeFromHandle);
             return ilGenerator;
         }
 
@@ -450,7 +464,7 @@ namespace FS.DI.DynamicProxy
         /// <param name="type"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        internal static ILGenerator NewArray(this ILGenerator ilGenerator, Type type,int length)
+        internal static ILGenerator NewArray(this ILGenerator ilGenerator, Type type, int length)
         {
             ilGenerator.LoadInt(length);
             ilGenerator.Emit(OpCodes.Newarr, type);
@@ -473,9 +487,22 @@ namespace FS.DI.DynamicProxy
             return ilGenerator;
         }
 
+        internal static ILGenerator UnBox(this ILGenerator ilGenerator, Type type)
+        {
+            if (type.IsValueType)
+                ilGenerator.Emit(OpCodes.Unbox_Any, type);
+            return ilGenerator;
+        }
+
         public static ILGenerator Cast(this ILGenerator ilGenerator, Type type)
         {
-            ilGenerator.Emit(OpCodes.Castclass, type);
+            if (type.IsClass || type.IsInterface)
+                ilGenerator.Emit(OpCodes.Castclass, type);
+            return ilGenerator;
+        }
+
+        public static ILGenerator ConvertType(this ILGenerator ilGenerator,Type type)
+        {
             return ilGenerator;
         }
     }

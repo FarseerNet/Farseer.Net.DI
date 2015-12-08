@@ -1,41 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     /// <summary>
     ///     依赖服务对象
     /// </summary>
-    public sealed class DependencyEntry
+    public sealed class Dependency
     {
         /// <summary>
         ///     线程锁
         /// </summary>
-        private readonly Object _sync = new Object();
+        private readonly object _sync = new object();
 
         /// <summary>
         ///     依赖服务风格
         /// </summary>
-        public DependencyStyle Style { get; internal set; }
+        internal DependencyStyle Style { get; set; }
 
         /// <summary>
         ///     依赖服务实现类型
         /// </summary>
-        internal Type ImplementationType { get; private set; }
+        internal Type ImplementationType { get; }
 
         /// <summary>
         ///     依赖服务实例
         /// </summary>
-        internal Object ImplementationInstance { get; private set; }
+        internal object ImplementationInstance { get; }
 
         /// <summary>
         ///     返回依赖服务实现类委托
         /// </summary>
-        internal Func<IDependencyResolver, object> ImplementationDelegate { get; private set; }
+        internal Func<IDependencyResolver, object> ImplementationDelegate { get; }
 
         /// <summary>
         ///     依赖服务类型
         /// </summary>
-        public Type ServiceType { get; private set; }
+        public Type ServiceType { get; }
 
         /// <summary>
         ///     依赖服务生命周期
@@ -45,14 +46,14 @@ namespace FS.DI.Core
         /// <summary>
         ///     依赖服务下一个实现
         /// </summary>
-        public DependencyEntry Next { get; private set; }
+        public Dependency Next { get; private set; }
 
         /// <summary>
         ///     依赖服务实现
         /// </summary>
-        public DependencyEntry Last { get; private set; }
+        public Dependency Last { get; private set; }
 
-        private DependencyEntry(Type serviceType, DependencyLifetime lifetime)
+        private Dependency(Type serviceType, DependencyLifetime lifetime)
         {
             if (serviceType == null)
             {
@@ -69,7 +70,7 @@ namespace FS.DI.Core
             Last = this;
         }
 
-        private DependencyEntry(Type serviceType, DependencyLifetime lifetime, Type implementationType)
+        private Dependency(Type serviceType, DependencyLifetime lifetime, Type implementationType)
             : this(serviceType, lifetime)
         {
 
@@ -85,26 +86,29 @@ namespace FS.DI.Core
 
             if (!serviceType.IsAssignableFrom(implementationType))
             {
-                throw new InvalidOperationException(String.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName, implementationType.FullName));
+                throw new InvalidOperationException(string.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName,
+                    implementationType.FullName));
             }
 
             ImplementationType = implementationType;
         }
 
-        private DependencyEntry(Type serviceType, Object implementationInstance)
+        private Dependency(Type serviceType, object implementationInstance)
             : this(serviceType, DependencyLifetime.Singleton)
         {
             var implType = implementationInstance.GetType();
 
             if (!serviceType.IsAssignableFrom(implType))
             {
-                throw new InvalidOperationException(String.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName, implType.FullName));
+                throw new InvalidOperationException(string.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName,
+                    implType.FullName));
             }
 
             ImplementationInstance = implementationInstance;
         }
 
-        private DependencyEntry(Type serviceType, DependencyLifetime lifetime, Func<IDependencyResolver, object> implementationDelegate)
+        private Dependency(Type serviceType, DependencyLifetime lifetime,
+            Func<IDependencyResolver, object> implementationDelegate)
             : this(serviceType, lifetime)
         {
             ImplementationDelegate = implementationDelegate;
@@ -112,7 +116,8 @@ namespace FS.DI.Core
             var implType = GetDelegateReturnType();
 
             if (!serviceType.IsAssignableFrom(implType))
-                throw new InvalidOperationException(String.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName, implType.FullName));
+                throw new InvalidOperationException(string.Format("无法由类型\"{1}\"创建\"{0}\"的实例。", serviceType.FullName,
+                    implType.FullName));
         }
 
         /// <summary>
@@ -134,7 +139,7 @@ namespace FS.DI.Core
                 return GetDelegateReturnType();
             }
 
-            throw new InvalidOperationException(string.Format("无法获取{0}的实现类型。", ServiceType.FullName));
+            throw new InvalidOperationException($"无法获取{ServiceType.FullName}的实现类型。");
         }
 
         private Type GetDelegateReturnType()
@@ -152,49 +157,52 @@ namespace FS.DI.Core
         /// <summary>
         ///     添加依赖服务
         /// </summary>
-        /// <param name="dependencyEntry">相同类型的依赖服务</param>
-        public void Add(DependencyEntry dependencyEntry)
+        /// <param name="dependency">相同类型的依赖服务</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void Add(Dependency dependency)
         {
-            if (dependencyEntry == null)
-            {
-                throw new ArgumentNullException(nameof(dependencyEntry));
-            }
+            if (dependency == null)
+                throw new ArgumentNullException(nameof(dependency));
 
-            if (ServiceType != dependencyEntry.ServiceType)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dependencyEntry), "当前注册的服务类型需于目标服务类型一致。");
-            }
+            if (ServiceType != dependency.ServiceType)
+                throw new ArgumentOutOfRangeException(nameof(dependency), "当前注册的服务类型需于目标服务类型一致。");
 
-            if (GetImplementationType() == dependencyEntry.GetImplementationType())
-            {
-                throw new ArgumentOutOfRangeException(nameof(dependencyEntry), "已注册" + dependencyEntry.ServiceType.FullName + "相同的实现类型。");
-            }
+            if (GetImplementationType() == dependency.GetImplementationType())
+                throw new ArgumentOutOfRangeException(nameof(dependency),
+                    message: $"已注册{dependency.ServiceType.FullName}相同的实现类型。");
 
-            AddEntry(dependencyEntry);
+            AddDependency(dependency);
         }
 
         /// <summary>
         ///     添加依赖服务
         /// </summary>
-        private void AddEntry(DependencyEntry entry)
+        private void AddDependency(Dependency dependency)
         {
             lock (_sync)
             {
-                Last.Next = entry;
-                Last = entry.Last;
-                Last.Last = entry.Last;
+                Last.Next = dependency;
+                Last = dependency.Last;
+                Last.Last = dependency.Last;
             }
+        }
+
+        public IEnumerable<Dependency> Chain()
+        {
+            for (var @this = this; @this.Next != null; @this = @this.Next)
+            {
+                yield return @this;
+            }
+            yield return this.Last;
         }
 
         /// <summary>
         ///     重写ToString
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return String.Format("ServiceType:\"{0}\"  \nImplementationType:\"{1}\"  \nLifetime:\"{2}\"\n",
-                ServiceType, GetImplementationType(), Lifetime);
-        }
+        public override string ToString() =>
+            $"ServiceType:\"{ServiceType}\"  \nImplementationType:\"{GetImplementationType()}\"  \nLifetime:\"{Lifetime}\"\n";
 
         /// <summary>
         ///     创建实现类型的依赖服务
@@ -203,10 +211,8 @@ namespace FS.DI.Core
         /// <param name="lifetime">依赖服务生命周期</param>
         /// <param name="implementationType">依赖服务实现类型</param>
         /// <returns>依赖服务对象</returns>
-        public static DependencyEntry ForType(Type serviceType, DependencyLifetime lifetime, Type implementationType)
-        {
-            return new DependencyEntry(serviceType, lifetime, implementationType);
-        }
+        public static Dependency ForType(Type serviceType, DependencyLifetime lifetime, Type implementationType)
+            => new Dependency(serviceType, lifetime, implementationType);
 
         /// <summary>
         ///     创建实例的依赖服务
@@ -214,10 +220,8 @@ namespace FS.DI.Core
         /// <param name="serviceType">依赖服务类型</param>
         /// <param name="implementationInstance">依赖服务实例</param>
         /// <returns>依赖服务对象</returns>
-        public static DependencyEntry ForInstance(Type serviceType, Object implementationInstance)
-        {
-            return new DependencyEntry(serviceType, implementationInstance);
-        }
+        public static Dependency ForInstance(Type serviceType, object implementationInstance)
+            => new Dependency(serviceType, implementationInstance);
 
         /// <summary>
         ///      创建委托的依赖服务
@@ -227,10 +231,8 @@ namespace FS.DI.Core
         /// <param name="lifetime">依赖服务生命周期</param>
         /// <param name="implementationDelegate">返回依赖服务实现的委托</param>
         /// <returns>依赖服务对象</returns>
-        public static DependencyEntry ForDelegate<TService>(Type serviceType, DependencyLifetime lifetime, Func<IDependencyResolver, TService> implementationDelegate)
-            where TService : class
-        {
-            return new DependencyEntry(serviceType, lifetime, implementationDelegate);
-        }
+        public static Dependency ForDelegate<TService>(Type serviceType, DependencyLifetime lifetime,
+            Func<IDependencyResolver, TService> implementationDelegate)
+            where TService : class => new Dependency(serviceType, lifetime, implementationDelegate);
     }
 }

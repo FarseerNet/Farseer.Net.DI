@@ -11,30 +11,32 @@ namespace FS.DI.DynamicProxy
     /// </summary>
     internal class InternalDynamicTypeProvider : IDynamicTypeProvider
     {
-        private static ConcurrentDictionary<Type, Type> _dynamicTypeMap = new ConcurrentDictionary<Type, Type>();
+        private static readonly ConcurrentDictionary<Type, Type> DynamicTypeMap = new ConcurrentDictionary<Type, Type>();
 
         /// <summary>
         ///     创建动态类型
         /// </summary>
         public Type CreateType(Type parentType)
         {
-            return _dynamicTypeMap.GetOrAdd(parentType, _ =>
+            return DynamicTypeMap.GetOrAdd(parentType, _ =>
             {
-                var name = "_" + (parentType.IsInterface ? parentType.Name.Substring(1) : parentType.Name);
+                var name = $"_{(parentType.IsInterface ? parentType.Name.Substring(1) : parentType.Name)}";
 
-                var builder = DynamicAssembly.Current.ModuleBuilder.DefineType(name, TypeAttributes.NotPublic,
-                    parentType.IsClass ? parentType : typeof(Object),
-                    parentType.IsClass ? parentType.GetInterfaces() : new Type[] { parentType }.Concat(parentType.GetInterfaces()).ToArray());
+                var builder = DynamicModule.Current.Module.DefineType(name, TypeAttributes.NotPublic,
+                    parentType.IsClass ? parentType : typeof (object),
+                    parentType.IsClass
+                        ? parentType.GetInterfaces()
+                        : new[] {parentType}.Concat(parentType.GetInterfaces()).ToArray());
 
                 parentType.GetProperties().
                     Where(p => p.GetGetMethod().IsAbstract).
-                    ForEach(property => DynamicHelper.DefineProperty(builder, property));
+                    ForEach(property => builder.DefineProperty(property));
 
                 if (parentType.IsInterface)
                 {
                     parentType.GetInterfaces().ForEach(type => type.GetProperties().
                         Where(p => p.GetGetMethod().IsAbstract).
-                        ForEach(property => DynamicHelper.DefineProperty(builder, property)));
+                        ForEach(property => builder.DefineProperty(property)));
                 }
 
                 return builder.CreateType();
@@ -46,7 +48,7 @@ namespace FS.DI.DynamicProxy
         /// </summary>
         public static Type CreateType<T>()
         {
-            return new InternalDynamicTypeProvider().CreateType(typeof(T));
+            return new InternalDynamicTypeProvider().CreateType(typeof (T));
         }
     }
 }

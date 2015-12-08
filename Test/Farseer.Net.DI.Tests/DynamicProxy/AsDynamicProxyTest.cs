@@ -1,7 +1,5 @@
-﻿using System;
-using FS.DI.Core;
+﻿using FS.DI.Tests.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FS.DI.Tests.Infrastructure;
 
 namespace FS.DI.Tests.DynamicProxy
 {

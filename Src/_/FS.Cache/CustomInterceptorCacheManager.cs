@@ -1,7 +1,7 @@
 ﻿using FS.DI.DynamicProxy;
+using FS.Extends;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FS.Cache
 {
@@ -13,7 +13,7 @@ namespace FS.Cache
         /// <summary>
         ///     线程锁
         /// </summary>
-        private static readonly Object _sync = new Object();
+        private static readonly object Sync = new object();
 
         private CustomInterceptorCacheManager(Type key)
             : base(key)
@@ -22,11 +22,9 @@ namespace FS.Cache
 
         protected override IEnumerable<ICustomInterceptor> SetCacheLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
-                if (CacheList.ContainsKey(Key)) return CacheList[Key];
-
-                return null;
+                return CacheList.ContainsKey(Key) ? CacheList[Key] : null;
             }
         }
 
@@ -35,7 +33,7 @@ namespace FS.Cache
         /// </summary>
         private void RemoveLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (CacheList.ContainsKey(Key)) CacheList.Remove(Key);
                 else throw new ArgumentException("尝移除不存在的配置失败。");
@@ -48,7 +46,7 @@ namespace FS.Cache
         public static IEnumerable<ICustomInterceptor> GetCache(Type key)
         {
             var cache = new CustomInterceptorCacheManager(key).GetValue();
-            return cache == null ? new ICustomInterceptor[0] : cache;
+            return cache ?? ArrayExtends.Empty<ICustomInterceptor>();
         }
 
         /// <summary>
@@ -69,13 +67,10 @@ namespace FS.Cache
             else
             {
                 foreach (var item in interceptors)
-                    (cache as HashSet<ICustomInterceptor>).Add(item);
+                    ((HashSet<ICustomInterceptor>) cache).Add(item);
             }
         }
 
-        public static void RemoveCache(Type key)
-        {
-            new CustomInterceptorCacheManager(key).RemoveLock();
-        }
+        public static void RemoveCache(Type key) => new CustomInterceptorCacheManager(key).RemoveLock();
     }
 }

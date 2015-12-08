@@ -1,7 +1,6 @@
-﻿using FS.DI.Core;
+﻿using FS.DI;
 using FS.DI.Resolve;
 using FS.Extends;
-using System;
 using System.Collections.Generic;
 
 namespace FS.Cache
@@ -14,7 +13,8 @@ namespace FS.Cache
         /// <summary>
         ///     线程锁
         /// </summary>
-        private static readonly Object _sync = new Object();
+        private static readonly object Sync = new object();
+
         private CallSiteCacheManager(IDependencyResolver key)
             : base(key)
         {
@@ -25,7 +25,7 @@ namespace FS.Cache
         /// </summary>
         protected override IEnumerable<IResolverCallSite> SetCacheLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (CacheList.ContainsKey(Key)) return CacheList[Key];
 
@@ -38,7 +38,7 @@ namespace FS.Cache
         /// </summary>
         private void RemoveLock()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (CacheList.ContainsKey(Key)) CacheList.Remove(Key);
             }
@@ -48,13 +48,13 @@ namespace FS.Cache
         ///     设置缓存
         /// </summary>
         public static void SetCache(IDependencyResolver key, params IResolverCallSite[] callSites)
-        {         
+        {
             if (callSites == null || callSites.Length == 0)
                 return;
-            lock (_sync)
+            lock (Sync)
             {
                 var collection = new CallSiteCacheManager(key).GetValue();
-                callSites.ForEach(callSite => (collection as ICollection<IResolverCallSite>).Add(callSite));
+                callSites.ForEach(callSite => ((ICollection<IResolverCallSite>) collection).Add(callSite));
             }
         }
 
@@ -62,16 +62,11 @@ namespace FS.Cache
         ///     获取缓存
         /// </summary>
         public static IEnumerable<IResolverCallSite> GetCache(IDependencyResolver key)
-        {
-           return new CallSiteCacheManager(key).GetValue();          
-        }
+            => new CallSiteCacheManager(key).GetValue();
 
         /// <summary>
         ///     删除缓存
         /// </summary>
-        public static void RemoveCache(IDependencyResolver key)
-        {
-            new CallSiteCacheManager(key).RemoveLock();
-        }
+        public static void RemoveCache(IDependencyResolver key) => new CallSiteCacheManager(key).RemoveLock();
     }
 }

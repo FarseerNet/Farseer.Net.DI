@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using System;
+﻿using System;
 using System.Linq.Expressions;
 
 namespace FS.DI.Resolve.CallSite
@@ -16,9 +15,9 @@ namespace FS.DI.Resolve.CallSite
 
         public void Resolver(IResolverContext context, IDependencyResolver resolver)
         {
-            Expression<Func<IDependencyResolver, Object[], Object>> factory =
-                (_r, _args) =>
-                context.DependencyEntry.ImplementationDelegate(_r);
+            Expression<Func<IDependencyResolver, object[], object>> factory =
+                (r, args) =>
+                    context.Dependency.ImplementationDelegate(r);
 
             context.Resolved = factory;
         }

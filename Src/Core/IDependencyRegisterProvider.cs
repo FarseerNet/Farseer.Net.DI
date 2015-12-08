@@ -1,4 +1,4 @@
-﻿namespace FS.DI.Core
+﻿namespace FS.DI
 {
     /// <summary>
     ///     依赖服务注册器提供者

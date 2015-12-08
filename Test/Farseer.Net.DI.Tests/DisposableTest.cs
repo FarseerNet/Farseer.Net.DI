@@ -1,6 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FS.DI.Core;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace FS.DI.Tests
 {

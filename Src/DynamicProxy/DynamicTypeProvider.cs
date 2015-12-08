@@ -5,7 +5,7 @@ namespace FS.DI.DynamicProxy
 {
     public class DynamicTypeProvider
     {
-        private static DynamicTypeProvider _instance = new DynamicTypeProvider();
+        private static readonly DynamicTypeProvider Instance = new DynamicTypeProvider();
 
         private IDynamicTypeProvider _current;
 
@@ -17,19 +17,14 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     当前的IDynamicTypeProvider实例
         /// </summary>
-        public static IDynamicTypeProvider Current { get; } = _instance.InnerCurrent;
-
-        public IDynamicTypeProvider InnerCurrent
-        {
-            get { return _current; }
-        }
+        public static IDynamicTypeProvider Current => Instance._current;
 
         /// <summary>
         ///     设置IDynamicTypeProvider的实例
         /// </summary>
         public static void SetProvider(IDynamicTypeProvider dynamicTypeProvider)
         {
-            _instance.InnerSetProvider(dynamicTypeProvider);
+            Instance.InnerSetProvider(dynamicTypeProvider);
         }
 
         /// <summary>
@@ -37,13 +32,14 @@ namespace FS.DI.DynamicProxy
         /// </summary>
         public static void SetProvider(Func<Type, Type> dynamicTypeProvider)
         {
-            _instance.InnerSetProvider(dynamicTypeProvider);
+            Instance.InnerSetProvider(dynamicTypeProvider);
         }
 
         /// <summary>
         ///     设置IDynamicTypeProvider的实例
         /// </summary>
-        public void InnerSetProvider(IDynamicTypeProvider dynamicTypeProvider)
+        /// <exception cref="ArgumentNullException"></exception>
+        private void InnerSetProvider(IDynamicTypeProvider dynamicTypeProvider)
         {
             if (dynamicTypeProvider == null)
             {
@@ -55,7 +51,8 @@ namespace FS.DI.DynamicProxy
         /// <summary>
         ///     设置自定义的动态类型创建
         /// </summary>
-        public void InnerSetProvider(Func<Type, Type> dynamicTypeProvider)
+        /// <exception cref="ArgumentNullException"></exception>
+        private void InnerSetProvider(Func<Type, Type> dynamicTypeProvider)
         {
             if (dynamicTypeProvider == null)
             {
@@ -69,6 +66,10 @@ namespace FS.DI.DynamicProxy
         /// </summary>
         private class DefaultDynamicTypeProvider : IDynamicTypeProvider
         {
+            /// <summary>
+            ///     创建动态类型
+            /// </summary>
+            /// <exception cref="MissingMethodException"></exception>
             public Type CreateType(Type parentType)
             {
                 try
@@ -78,18 +79,18 @@ namespace FS.DI.DynamicProxy
                     if (parentType.IsAbstract)
                         throw new MissingMethodException("无法创建抽象类的实例。");
 
-                    var builder = DynamicAssembly.Current.ModuleBuilder.
+                    var builder = DynamicModule.Current.Module.
                         DefineProxyType(parentType).DefineConstructors(parentType).DefineOverrideMethods(parentType);
 
                     parentType.GetInterfaces().ForEach(interfaceType =>
-                        DynamicHelper.DefineExplicitInterfaceMethods(builder, interfaceType, parentType));
+                        builder.DefineExplicitInterfaceMethods(interfaceType, parentType));
 
                     return builder.CreateType();
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("类型\"" + parentType.FullName + "\"生成代理类时发生异常：" + ex.Message, ex);
-                }
+                    throw new InvalidOperationException($"类型\"{parentType.FullName}\"生成代理类时发生异常：{ex.Message}", ex);
+                }  
             }
         }
 

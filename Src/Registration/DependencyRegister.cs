@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using System;
+﻿using System;
 
 namespace FS.DI.Registration
 {
@@ -9,20 +8,23 @@ namespace FS.DI.Registration
     internal class DependencyRegister : IDependencyRegister
     {
         private readonly IFarseerContainer _container;
+
         internal DependencyRegister(IFarseerContainer container)
         {
             _container = container;
         }
+
         /// <summary>
         ///     注册依赖服务对象
         /// </summary>
-        /// <param name="dependencyEntry">依赖服务对象</param>
-        public void RegisterEntry(DependencyEntry dependencyEntry)
+        /// <param name="dependency">依赖服务对象</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void RegisterDependency(Dependency dependency)
         {
-            if (dependencyEntry == null)
-                throw new ArgumentNullException(nameof(dependencyEntry));
+            if (dependency == null)
+                throw new ArgumentNullException(nameof(dependency));
 
-            _container.Add(dependencyEntry);
-        }   
+            _container.Add(dependency);
+        }
     }
 }

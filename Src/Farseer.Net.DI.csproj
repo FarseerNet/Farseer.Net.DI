@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Farseer.Net, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -45,12 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DependencyEntry.cs" />
+    <Compile Include="Core\Dependency.cs" />
     <Compile Include="Core\DependencyLifetime.cs" />
     <Compile Include="Core\DependencyStyle.cs" />
     <Compile Include="DynamicProxy\CustomInterceptorManager.cs" />
     <Compile Include="DynamicProxy\DynamicActivator.cs" />
-    <Compile Include="DynamicProxy\DynamicAssembly.cs" />
+    <Compile Include="DynamicProxy\DynamicModule.cs" />
     <Compile Include="DynamicProxy\InternalDynamicTypeProvider.cs" />
     <Compile Include="DynamicProxy\Invocations\IExceptionInvocation.cs" />
     <Compile Include="DynamicProxy\Invocations\IParameter.cs" />
@@ -59,13 +61,13 @@
     <Compile Include="Registration\Registrations\ISingletonRegistration`T.cs" />
     <Compile Include="_\FS.Cache\CallSiteCacheManager.cs" />
     <Compile Include="_\FS.Cache\CompileCacheManager.cs" />
-    <Compile Include="_\FS.Cache\DependencyEntryCacheManager.cs" />
+    <Compile Include="_\FS.Cache\DependencyCacheManager.cs" />
     <Compile Include="_\FS.Cache\PropertyCacheManager.cs" />
     <Compile Include="_\FS.Cache\ScopedCacheManager.cs" />
     <Compile Include="_\FS.Cache\ScopedKeyCacheManager.cs" />
     <Compile Include="DynamicProxy\DynamicHelper.cs" />
     <Compile Include="_\FS.Cache\DynamicTypeCacheManager.cs" />
-    <Compile Include="_\FS.Extends\DependencyEntryExtends.cs" />
+    <Compile Include="_\FS.Extends\ArrayExtends.cs" />
     <Compile Include="_\FS.Extends\ILGeneratorExtends.cs" />
     <Compile Include="_\FS.Extends\InterceptorExtends.cs" />
     <Compile Include="DynamicProxy\DynamicTypeProvider.cs" />

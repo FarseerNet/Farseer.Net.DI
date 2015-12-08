@@ -1,5 +1,4 @@
-﻿using FS.DI.Core;
-using System;
+﻿using System;
 
 namespace FS.DI.Resolve
 {
@@ -11,12 +10,13 @@ namespace FS.DI.Resolve
         public bool Handled { get; set; } = false;
 
         public object Resolved { get; set; }
-        public DependencyEntry DependencyEntry { get; private set; }
 
-        public ResolverContext(DependencyEntry dependencyEntry)
+        public Dependency Dependency { get; }
+
+        public ResolverContext(Dependency dependency)
         {
-            if (dependencyEntry == null) throw new ArgumentNullException(nameof(dependencyEntry));
-            DependencyEntry = dependencyEntry;
+            if (dependency == null) throw new ArgumentNullException(nameof(dependency));
+            Dependency = dependency;
         }
     }
 }

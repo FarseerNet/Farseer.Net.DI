@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FS.DI.Core
+namespace FS.DI
 {
     /// <summary>
     ///     忽略属性依赖
@@ -8,5 +8,5 @@ namespace FS.DI.Core
     [AttributeUsage(AttributeTargets.Property)]
     public class IgnoreDependencyAttribute : Attribute
     {
-    } 
+    }
 }
