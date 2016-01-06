@@ -22,6 +22,120 @@ Farseer.Net是所有项目的基础组件，以FS命名空间开头
     
 * Farseer.Net.Log：日志
 
+## Farseer.Net.DI
+1. Farseer.Net.DI是一个轻量级、高性能的IoC+Aop解决方案。
+2. 基于.net Framework4开发。
+3. 支持：无配置化依赖注入。
+4. 支持：批量服务注册。
+5. 支持：自动属性注入。
+6. 支持：基于特性的异常，方法，参数和返回值拦截。
+7. 支持：Mvc，Web Api，Wcf，Wpf，Winform。
+
+### 获取
+
+```cs
+
+    通过nuget获取package：PM> Install-Package Farseer.Net.DI
+    
+```
+
+### 开始使用
+
+```cs
+/// 初始化容器
+IFarseerContainer container = new FarseerContainer();
+     
+///  创建注册器
+IDependencyRegister register = container.CreateRegister();
+     
+///  注册类型
+register.RegisterType<IUserRepository, UserRepository>();
+     
+///  创建解析器
+using(IDependencyResolver resolver = container.CreateResolver())
+{
+     
+    ///  解析类型
+    IUserRepository repository = resolver.Resolve<IUserRepository>();
+}
+```
+### 依赖注册
+```cs
+///  使用类型注册
+register.RegisterType<IUserRepository, UserRepository>();
+    
+///  使用类型实例注册
+register.RegisterInstance<IUserRepository>(new UserRepository());
+    
+//  使用委托注册
+register.RegisterDelegate<IUserRepository, UserRepository>(
+    resolver =>
+    {
+        return new UserRepository();
+    });
+        
+///  注册指定程序集包含的所有类型
+register.RegisterAssembly(Assembly.GetExecutingAssembly());
+    
+///  注册指定程序集中实现特定接口的所有类型
+register.RegisterAssembly<IDependency>(Assembly.GetExecutingAssembly());
+    
+///  注册指定程序集中遵循命名约定的所有类型
+register.RegisterAssembly(Assembly.GetExecutingAssembly(), "Service");
+    
+///  注册程序集中所有符合过滤条件的类型
+register.RegisterAssembly(Assembly.GetExecutingAssembly(), type => type.IsClass);
+```
+### 生命周期
+```cs
+///  每次解析创建一个新的实例
+register.RegisterType<IUserRepository, UserRepository>().AsTransientLifetime();
+
+///  在容器中为单例
+register.RegisterType<IUserRepository, UserRepository>().AsSingletonLifetime();
+
+///  在同一作用域中为单例
+register.RegisterType<IUserRepository, UserRepository>().AsScopedLifetime();
+``` 
+### 依赖解析
+```cs
+///  解析实现特定接口的类型
+IUserRepository repository = resolver.Resolve<IUserRepository>();
+
+///  解析实现特定接口的所有类型
+IEnumerable<IDependency> dependencys = resolver.ResolveAll<IDependency>();
+```  
+### 作用域
+```cs
+using (IDependencyResolver resolver = container.CreateResolver())
+{
+     ///  创建作用域解析器
+     using (IScopedResolver scoped = resolver.CreateScopedResolver())
+     {
+         IUserRepository repository = scoped.Resolve<IUserRepository>();
+     }
+}
+```
+
+### 自动属性注入  
+```cs
+public class UserRepository : IUserRepository  
+{  
+    public ILogger Logger { get; set; }  
+}  
+  
+///  作为自动注入的属性  
+register.RegisterType<ILogger, Logger>().AsPropertyDependency();  
+
+register.RegisterType<IUserRepository, UserRepository>();  
+
+using (IDependencyResolver resolver = container.CreateResolver())  
+{  
+    ///  解析依赖，属性自动注入  
+    IUserRepository repository = resolver.Resolve<IUserRepository>();  
+}  
+```
+
 ##申明与呼吁
  * Farseer.net 的初衷不是为了推广其知名度及祈求大家在自己项目上使用它，而是希望大家都参与到这个项目（哪怕仅仅是提供意见也是我非常需要的）。
 
