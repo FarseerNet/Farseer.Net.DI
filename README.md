@@ -152,11 +152,10 @@ using (IDependencyResolver resolver = container.CreateResolver())
 
 * QQ群: 116228666
 * ORM教程：http://www.cnblogs.com/steden/
-* DI教程：http://www.cnblogs.com/lhyEmpty/
 
 ##开源地址
 [https://github.com/FarseerNet](https://github.com/FarseerNet "Farseer.net")
 
 ##关于作者
 [steden](http://www.cnblogs.com/steden/)
-[Leandro](http://www.cnblogs.com/lhyEmpty/)
+[Leandro](http://www.cnblogs.com/liuhaoyang/)
