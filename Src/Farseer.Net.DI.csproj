@@ -34,8 +34,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Farseer.Net, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Farseer.Net">
       <HintPath>..\Lib\Farseer.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -47,9 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Dependency.cs" />
-    <Compile Include="Core\DependencyLifetime.cs" />
-    <Compile Include="Core\DependencyStyle.cs" />
+    <Compile Include="Core\Old\Dependency.cs" />
+    <Compile Include="Core\Old\DependencyLifetime.cs" />
+    <Compile Include="Core\Old\DependencyStyle.cs" />
     <Compile Include="DynamicProxy\CustomInterceptorManager.cs" />
     <Compile Include="DynamicProxy\DynamicActivator.cs" />
     <Compile Include="DynamicProxy\DynamicModule.cs" />
@@ -80,18 +79,18 @@
     <Compile Include="DynamicProxy\Invocations\IParameterInvocation.cs" />
     <Compile Include="DynamicProxy\Attributes\ParameterInterceptorAttribute.cs" />
     <Compile Include="FarseerContainer.cs" />
-    <Compile Include="Core\IScopedResolverProvider.cs" />
+    <Compile Include="Core\Old\IScopedResolverProvider.cs" />
     <Compile Include="IgnoreDependencyAttribute.cs" />
     <Compile Include="DynamicProxy\Interceptors\ICustomInterceptor.cs" />
     <Compile Include="DynamicProxy\Attributes\MethodInterceptorAttribute.cs" />
     <Compile Include="DynamicProxy\Interceptors\IInterceptor.cs" />
     <Compile Include="DynamicProxy\Interceptors\IMethodInterceptor.cs" />
     <Compile Include="Registration\Registrations\IDependencyRegistration.cs" />
-    <Compile Include="Core\IDependencyRegister.cs" />
-    <Compile Include="Core\IDependencyRegisterProvider.cs" />
-    <Compile Include="Core\IDependencyResolver.cs" />
-    <Compile Include="Core\IDependencyResolverProvider.cs" />
-    <Compile Include="Core\IFarseerContainer.cs" />
+    <Compile Include="Core\Old\IDependencyRegister.cs" />
+    <Compile Include="Core\Old\IDependencyRegisterProvider.cs" />
+    <Compile Include="Core\Old\IDependencyResolver.cs" />
+    <Compile Include="Core\Old\IDependencyResolverProvider.cs" />
+    <Compile Include="Core\Old\IFarseerContainer.cs" />
     <Compile Include="Registration\Registrations\IDynamicProxyRegistration.cs" />
     <Compile Include="Registration\Registrations\ILifetimeRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -118,7 +117,7 @@
     <Compile Include="DependencyResolverExtensions.cs" />
     <Compile Include="Resolve\IResolverCallSite.cs" />
     <Compile Include="Resolve\IResolverContext.cs" />
-    <Compile Include="Core\IScopedResolver.cs" />
+    <Compile Include="Core\Old\IScopedResolver.cs" />
     <Compile Include="Resolve\ResolverContext.cs" />
     <Compile Include="_\FS.Cache\CustomInterceptorCacheManager.cs" />
     <Compile Include="_\FS.Extends\EnumerableExtends.cs" />
